@@ -57,7 +57,10 @@ angular.module('fulfillflowApp', [
       redirectTo: '/'
     });
 
-  $locationProvider.html5Mode(true);
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  });
 }])
 .run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
   $rootScope.$on('$routeChangeStart', function(event, next, current) {
