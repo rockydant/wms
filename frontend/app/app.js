@@ -60,7 +60,7 @@ angular.module('fulfillflowApp', [
   $locationProvider.html5Mode({
     enabled: true,
     requireBase: false
-  });
+  }).hashPrefix('');
 }])
 .run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
   $rootScope.$on('$routeChangeStart', function(event, next, current) {

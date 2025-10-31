@@ -51,11 +51,42 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             const serveStatic = require('serve-static');
+            const path = require('path');
+            const fs = require('fs');
             return [
-              connect().use('/app', serveStatic('app')),
+              // Serve .tmp directory first (for compiled CSS, etc.)
               serveStatic('.tmp'),
+              // Serve bower_components
               serveStatic('./bower_components', { mount: '/bower_components' }),
-              serveStatic('app')
+              // Serve app directory (this will serve all static files including .js, .css, etc.)
+              serveStatic('app'),
+              // Fallback middleware - only for routes without file extensions (SPA routing)
+              function(req, res, next) {
+                // Skip API calls - they should 404 if not handled by backend
+                if (req.url.indexOf('/api') === 0) {
+                  return next();
+                }
+                // Check if this is a file request (has extension)
+                const urlPath = req.url.split('?')[0]; // Remove query string
+                const ext = path.extname(urlPath);
+                
+                // If it has an extension, let serveStatic handle it (or 404)
+                if (ext && ext !== '') {
+                  return next();
+                }
+                
+                // For routes without extensions (like /login, /dashboard), serve index.html
+                const indexPath = path.join(__dirname, 'app/index.html');
+                if (fs.existsSync(indexPath)) {
+                  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                  res.statusCode = 200;
+                  res.end(fs.readFileSync(indexPath));
+                  return;
+                }
+                
+                // If index.html doesn't exist, 404
+                next();
+              }
             ];
           }
         }

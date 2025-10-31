@@ -75,6 +75,47 @@ Frontend will be available at: `http://localhost:4200`
 
 ---
 
+## 🔐 Default Credentials
+
+**Initial Setup Required:**
+
+There are no default users created automatically. You need to create the first admin user through the registration API:
+
+```bash
+# Register first admin user via API
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@fulfillflow.com",
+    "password": "admin123",
+    "firstName": "Admin",
+    "lastName": "User",
+    "role": "Super Admin"
+  }'
+```
+
+**Recommended Default Credentials:**
+- **Email:** `admin@fulfillflow.com`
+- **Password:** `admin123`
+- **Role:** `Super Admin`
+
+⚠️ **IMPORTANT:** Change the default password immediately after first login!
+
+Alternatively, you can use the seed script to create the default admin user:
+
+```bash
+# Inside backend container or with npm
+cd backend
+npm run seed
+```
+
+This will create a default admin user with:
+- **Email:** `admin@fulfillflow.com`
+- **Password:** `admin123`
+- **Role:** `Super Admin`
+
+---
+
 ## 📁 Project Structure
 
 ```
