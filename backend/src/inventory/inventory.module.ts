@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InventoryService } from './inventory.service';
 import { InventoryController } from './inventory.controller';
@@ -17,9 +17,9 @@ import { PickingItem } from '../picking/entities/picking-item.entity';
     TypeOrmModule.forFeature([InventoryItem, Shipment, PickingItem]),
     CustomersModule,
     BarcodesModule,
-    WarehouseModule,
-    ShipmentsModule,
-    PickingModule,
+    forwardRef(() => WarehouseModule),
+    forwardRef(() => ShipmentsModule),
+    forwardRef(() => PickingModule),
   ],
   controllers: [InventoryController],
   providers: [InventoryService, AnomalyDetectionService],

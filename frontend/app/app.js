@@ -5,8 +5,7 @@ angular.module('fulfillflowApp', [
   'ngResource',
   'ngCookies',
   'ngSanitize',
-  'ngTouch',
-  'ui.router'
+  'ngTouch'
 ])
 .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
   $routeProvider

@@ -1,35 +1,22 @@
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy package files
-COPY package.json package-lock.json* ./
-
-# Install dependencies
-RUN npm install
-
-# Copy source code
-COPY . .
-
-# Build application
-RUN npm run build
-
-# Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install production dependencies only
-RUN npm install --omit=dev
+# Install all dependencies (including dev dependencies for development)
+# Rebuild native modules to ensure compatibility
+RUN npm install && npm rebuild bcrypt --build-from-source
 
-# Copy built application from builder
-COPY --from=builder /app/dist ./dist
+# Copy source code
+COPY . .
 
 # Expose port
 EXPOSE 3000
 
-# Start application
-CMD ["npm", "run", "start:prod"]
+# Start application (will use start:dev in docker-compose)
+CMD ["npm", "run", "start:dev"]

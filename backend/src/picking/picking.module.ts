@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
 import { PickingService } from './picking.service';
@@ -19,10 +19,10 @@ import { InventoryItem } from '../inventory/entities/inventory-item.entity';
     BullModule.registerQueue({
       name: 'picking',
     }),
-    ShipmentsModule,
-    InventoryModule,
+    forwardRef(() => ShipmentsModule),
+    forwardRef(() => InventoryModule),
     BarcodesModule,
-    WarehouseModule,
+    forwardRef(() => WarehouseModule),
   ],
   controllers: [PickingController],
   providers: [PickingService, PickingRouteOptimizationService],

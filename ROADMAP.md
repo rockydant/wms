@@ -148,6 +148,11 @@
 
 ---
 
+## Phase 8a - Return / Exchange / Giftcards
+- [ ] Scan to manage Return / Exchange packages
+- [ ] Dashboard and report to manage return / exchange for internal and external
+- [ ] Confige and API to allow customer setup replacement of exchange and manage return
+
 # FulfillFlow Extended Development Roadmap  
 *(Phases 9–13: Competitive Differentiation and Market Leadership)*  
 

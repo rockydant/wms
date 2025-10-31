@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WarehouseService } from './warehouse.service';
 import { WarehouseController } from './warehouse.controller';
@@ -24,8 +24,8 @@ import { PickingItem } from '../picking/entities/picking-item.entity';
       InventoryItem,
       PickingItem,
     ]),
-    InventoryModule,
-    PickingModule,
+    forwardRef(() => InventoryModule),
+    forwardRef(() => PickingModule),
   ],
   controllers: [WarehouseController],
   providers: [
