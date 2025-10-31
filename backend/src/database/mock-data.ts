@@ -14,9 +14,15 @@ import { Warehouse } from '../warehouse/entities/warehouse.entity';
  * Mock Data Generator Script
  * Creates a fake company/customer with sample data for testing
  * 
- * Run with: npm run mock-data
+ * Usage:
+ *   npm run mock-data                    # Creates "Fashion Trends Inc." (default)
+ *   npm run mock-data -- ethika          # Creates "Ethika" company
+ *   npm run mock-data -- "Company Name"  # Creates custom company
+ * 
+ * Or call the function directly:
+ *   generateMockDataForCompany("Ethika")
  */
-async function generateMockData() {
+async function generateMockDataForCompany(companyName: string = 'Fashion Trends Inc.') {
   const dataSource = new DataSource({
     type: 'postgres',
     host: process.env.DB_HOST || 'localhost',
@@ -44,24 +50,34 @@ async function generateMockData() {
 
     // Check if mock customer already exists
     let mockCustomer = await customerRepository.findOne({
-      where: { name: 'Fashion Trends Inc.' },
+      where: { name: companyName },
     });
 
     if (mockCustomer) {
-      console.log('ℹ️  Mock customer already exists, using existing customer');
+      console.log(`ℹ️  Customer "${companyName}" already exists, using existing customer`);
       console.log('📋 Customer ID:', mockCustomer.id);
       console.log('💡 To regenerate data, delete the customer first');
     }
 
+    // Generate company-specific details
+    const companySlug = companyName.toLowerCase().replace(/\s+/g, '');
+    const emailDomain = companySlug.includes('ethika') ? 'ethika.com' : 
+                       companySlug.includes('fashion') ? 'fashiontrends.com' :
+                       `${companySlug}.com`;
+    const contactEmail = `orders@${emailDomain}`;
+    const phoneNumber = `+1-555-${Math.floor(Math.random() * 9000) + 1000}`;
+    const streetNumber = Math.floor(Math.random() * 900) + 100;
+    const address = `${streetNumber} ${companyName.split(' ')[0]} Street, New York, NY ${Math.floor(Math.random() * 90000) + 10000}`;
+
     // Create Mock Customer if it doesn't exist
     if (!mockCustomer) {
-      console.log('📦 Creating mock customer...');
-      const apiKey = 'mock_' + Date.now() + '_' + Math.random().toString(36).substring(7);
+      console.log(`📦 Creating mock customer: ${companyName}...`);
+      const apiKey = `mock_${companySlug}_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       mockCustomer = customerRepository.create({
-        name: 'Fashion Trends Inc.',
-        contactEmail: 'orders@fashiontrends.com',
-        contactPhone: '+1-555-0123',
-        address: '123 Fashion Street, New York, NY 10001',
+        name: companyName,
+        contactEmail: contactEmail,
+        contactPhone: phoneNumber,
+        address: address,
         apiKey: apiKey,
         isActive: true,
       });
@@ -245,5 +261,14 @@ async function generateMockData() {
   }
 }
 
-generateMockData();
+// Main function to handle command line arguments
+async function main() {
+  // Get company name from command line arguments or use default
+  const args = process.argv.slice(2);
+  const companyName = args.length > 0 ? args.join(' ') : 'Fashion Trends Inc.';
+  
+  await generateMockDataForCompany(companyName);
+}
+
+main();
 
