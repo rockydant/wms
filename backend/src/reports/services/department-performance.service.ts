@@ -119,7 +119,7 @@ export class DepartmentPerformanceService {
         completedPOs,
         completionRate: Math.round(completionRate * 100) / 100,
         totalItemsReceived,
-        averageProcessingTime,
+        averageProcessingTime: avgProcessingTime,
         throughput: Math.round(throughput * 100) / 100,
         accuracyRate: Math.round(accuracyRate * 100) / 100,
       },
@@ -141,13 +141,19 @@ export class DepartmentPerformanceService {
 
     const queues = await this.orderQueueRepository.find({
       where,
-      relations: ['pickingItems', 'shipment'],
+      relations: ['pickingItems'],
     });
 
-    // Filter by customer if provided
-    const customerQueues = customerId
-      ? queues.filter((q) => q.shipment?.customerId === customerId)
-      : queues;
+    // Filter by customer if provided - need to load shipments separately if shipmentId exists
+    let customerQueues = queues;
+    if (customerId) {
+      const shipments = await this.shipmentRepository.find({
+        where: { customerId },
+        select: ['id', 'customerId'],
+      });
+      const shipmentIds = new Set(shipments.map(s => s.id));
+      customerQueues = queues.filter((q) => q.shipmentId && shipmentIds.has(q.shipmentId));
+    }
 
     const periodQueues = customerQueues.filter(
       (q) =>
@@ -187,7 +193,7 @@ export class DepartmentPerformanceService {
         completedQueues,
         completionRate: Math.round(completionRate * 100) / 100,
         totalItemsPicked,
-        averageProcessingTime,
+        averageProcessingTime: avgProcessingTime,
         throughput: Math.round(throughput * 100) / 100,
         accuracyRate: Math.round(accuracyRate * 100) / 100,
       },

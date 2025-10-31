@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DailyConfirmationService } from './daily-confirmation.service';
-import { Shipment } from '../../../shipments/entities/shipment.entity';
-import { PurchaseOrder } from '../../../receiving/entities/purchase-order.entity';
-import { OrderQueue } from '../../../picking/entities/order-queue.entity';
-import { Customer } from '../../../customers/entities/customer.entity';
-import { WebhooksService } from '../../../webhooks/webhooks.service';
+import { Shipment } from '../../shipments/entities/shipment.entity';
+import { PurchaseOrder } from '../../receiving/entities/purchase-order.entity';
+import { OrderQueue } from '../../picking/entities/order-queue.entity';
+import { Customer } from '../../customers/entities/customer.entity';
+import { WebhooksService } from '../../webhooks/webhooks.service';
 import { NotFoundException } from '@nestjs/common';
 
 describe('DailyConfirmationService', () => {

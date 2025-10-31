@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InsightReportsService } from './insight-reports.service';
-import { Shipment } from '../../../shipments/entities/shipment.entity';
-import { InventoryItem } from '../../../inventory/entities/inventory-item.entity';
-import { PurchaseOrder } from '../../../receiving/entities/purchase-order.entity';
-import { OrderQueue } from '../../../picking/entities/order-queue.entity';
-import { BillingInvoice } from '../../../billing/entities/billing-invoice.entity';
-import { FreightBooking } from '../../../freight-booking/entities/freight-booking.entity';
-import { WarehouseLocation } from '../../../warehouse/entities/warehouse-location.entity';
+import { Shipment } from '../../shipments/entities/shipment.entity';
+import { InventoryItem } from '../../inventory/entities/inventory-item.entity';
+import { PurchaseOrder } from '../../receiving/entities/purchase-order.entity';
+import { OrderQueue } from '../../picking/entities/order-queue.entity';
+import { BillingInvoice } from '../../billing/entities/billing-invoice.entity';
+import { FreightBooking } from '../../freight-booking/entities/freight-booking.entity';
+import { WarehouseLocation } from '../../warehouse/entities/warehouse-location.entity';
 
 describe('InsightReportsService', () => {
   let service: InsightReportsService;

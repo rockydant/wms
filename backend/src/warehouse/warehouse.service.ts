@@ -73,8 +73,8 @@ export class WarehouseService {
     await this.locationRepository.update(id, updateDto);
     const updated = await this.findOne(id);
     
-    // Recalculate utilization if capacity changed
-    if (updateDto.maxCapacity !== undefined || updateDto.currentCapacity !== undefined) {
+    // Recalculate utilization if capacity changed (note: currentCapacity is calculated, not in DTO)
+    if (updateDto.maxCapacity !== undefined) {
       if (updated.maxCapacity > 0) {
         updated.utilizationPercentage = (updated.currentCapacity / updated.maxCapacity) * 100;
       }
@@ -108,16 +108,16 @@ export class WarehouseService {
   }
 
   // Delegate warehouse CRUD operations
-  async createWarehouse = this.warehouseCrudService.create.bind(this.warehouseCrudService);
-  async findAllWarehouses = this.warehouseCrudService.findAll.bind(this.warehouseCrudService);
-  async findOneWarehouse = this.warehouseCrudService.findOne.bind(this.warehouseCrudService);
-  async updateWarehouse = this.warehouseCrudService.update.bind(this.warehouseCrudService);
-  async removeWarehouse = this.warehouseCrudService.remove.bind(this.warehouseCrudService);
+  createWarehouse = this.warehouseCrudService.create.bind(this.warehouseCrudService);
+  findAllWarehouses = this.warehouseCrudService.findAll.bind(this.warehouseCrudService);
+  findOneWarehouse = this.warehouseCrudService.findOne.bind(this.warehouseCrudService);
+  updateWarehouse = this.warehouseCrudService.update.bind(this.warehouseCrudService);
+  removeWarehouse = this.warehouseCrudService.remove.bind(this.warehouseCrudService);
 
   // Heatmap auto-update methods
-  async updateOnPick = this.heatmapAutoUpdateService.updateOnPick.bind(this.heatmapAutoUpdateService);
-  async updateOnPlace = this.heatmapAutoUpdateService.updateOnPlace.bind(this.heatmapAutoUpdateService);
-  async updateWarehouseHeatmap = this.heatmapAutoUpdateService.updateWarehouseHeatmap.bind(this.heatmapAutoUpdateService);
+  updateOnPick = this.heatmapAutoUpdateService.updateOnPick.bind(this.heatmapAutoUpdateService);
+  updateOnPlace = this.heatmapAutoUpdateService.updateOnPlace.bind(this.heatmapAutoUpdateService);
+  updateWarehouseHeatmap = this.heatmapAutoUpdateService.updateWarehouseHeatmap.bind(this.heatmapAutoUpdateService);
 
   async remove(id: string): Promise<void> {
     await this.locationRepository.softDelete(id);

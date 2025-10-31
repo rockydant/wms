@@ -90,9 +90,9 @@ export class FileImportExportController {
   @Get('shipments/export/csv')
   @ApiOperation({ summary: 'Export shipments to CSV' })
   async exportShipmentsToCSV(
+    @Res() res: Response,
     @Query('customerId') customerId?: string,
     @Query('warehouseId') warehouseId?: string,
-    @Res() res: Response,
   ) {
     const csv = await this.fileImportExportService.exportShipmentsToCSV(customerId, warehouseId);
     res.setHeader('Content-Type', 'text/csv');
@@ -103,9 +103,9 @@ export class FileImportExportController {
   @Get('shipments/export/xlsx')
   @ApiOperation({ summary: 'Export shipments to XLSX' })
   async exportShipmentsToXLSX(
+    @Res() res: Response,
     @Query('customerId') customerId?: string,
     @Query('warehouseId') warehouseId?: string,
-    @Res() res: Response,
   ) {
     const buffer = await this.fileImportExportService.exportShipmentsToXLSX(customerId, warehouseId);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -116,8 +116,8 @@ export class FileImportExportController {
   @Get('inventory/export/csv')
   @ApiOperation({ summary: 'Export inventory to CSV' })
   async exportInventoryToCSV(
-    @Query('customerId') customerId?: string,
     @Res() res: Response,
+    @Query('customerId') customerId?: string,
   ) {
     const csv = await this.fileImportExportService.exportInventoryToCSV(customerId);
     res.setHeader('Content-Type', 'text/csv');
@@ -128,8 +128,8 @@ export class FileImportExportController {
   @Get('inventory/export/xlsx')
   @ApiOperation({ summary: 'Export inventory to XLSX' })
   async exportInventoryToXLSX(
-    @Query('customerId') customerId?: string,
     @Res() res: Response,
+    @Query('customerId') customerId?: string,
   ) {
     const buffer = await this.fileImportExportService.exportInventoryToXLSX(customerId);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

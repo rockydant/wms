@@ -51,16 +51,16 @@ export class ShipmentsService {
 
     await this.shipmentItemsRepository.save(items);
 
-    const shipment = await this.findOne(savedShipment.id);
+    const savedShipmentWithRelations = await this.findOne(savedShipment.id);
 
     // Trigger webhook for shipment created
     await this.webhooksService.triggerWebhook(
-      shipment.customerId,
+      savedShipmentWithRelations.customerId,
       WebhookEvent.SHIPMENT_CREATED,
-      shipment,
+      savedShipmentWithRelations,
     );
 
-    return shipment;
+    return savedShipmentWithRelations;
   }
 
   async findAll(warehouseId?: string): Promise<Shipment[]> {

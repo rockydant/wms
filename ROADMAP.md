@@ -145,3 +145,121 @@
 - Performance ratings (Excellent, Good, Fair, Poor) based on completion rate, processing time, and accuracy
 - Overall performance metrics across all departments
 - Active operations tracking and alerts system
+
+---
+
+# FulfillFlow Extended Development Roadmap  
+*(Phases 9–13: Competitive Differentiation and Market Leadership)*  
+
+---
+
+## Phase 9 — Intelligent Operations (Next-Gen AI & Automation)
+🎯 **Goal:** Evolve from system-driven to self-optimizing fulfillment.
+
+- [ ] **Dynamic Slotting Engine** – automatically relocates SKUs based on forecasted demand, rack space, and picking frequency.  
+- [ ] **Digital Twin Simulation** – virtual warehouse visualization to test new layouts, routes, and labor shifts.  
+- [ ] **Labor Forecasting Engine** – predicts daily staffing needs per department using historical shipment volume trends.  
+- [ ] **SKU Demand Forecasting** – AI-driven model to predict SKU restock timing for each customer.  
+- [ ] **Smart Replenishment Alerts** – automated triggers for low-stock or slow-moving items.  
+- [ ] **Auto-Rack Reassignment Rules** – integrates predictive scores to preemptively balance hot/cold zones.
+
+**Deliverables**
+- Predictive AI modular monolith integrated into NestJS backend.  
+- Angular dashboards visualizing demand and slotting simulations.  
+- Daily auto-generated “Operational Forecast” report (staff, inbound, outbound, capacity).
+
+---
+
+## Phase 10 — Integration Marketplace & Extensibility
+🎯 **Goal:** Position FulfillFlow as an open fulfillment platform.
+
+- [ ] **Integration Hub / App Store** – host prebuilt connectors (Shopify, Amazon, WooCommerce, Walmart, TikTok, NetSuite).  
+- [ ] **Developer SDKs (Node.js + Python)** for API and webhook integration.  
+- [ ] **Webhook Sandbox** – browser-based testing for customer developers.  
+- [ ] **Partner API Tier** – authenticated endpoints for third-party carriers or ERPs.  
+- [ ] **Low-Code Workflow Builder** – drag-and-drop automation (e.g., “When PO received → notify Slack + assign QC”).  
+- [ ] **Template Marketplace** – downloadable workflow templates by industry (Apparel, Beauty, Electronics).
+
+**Deliverables**
+- Angular “Integrations” admin panel with plugin management.  
+- Backend plugin loader with metadata and access control.  
+- Public API documentation portal (Swagger + Redoc).  
+
+---
+
+## Phase 11 — Robotics, Vision & IoT Integration
+🎯 **Goal:** Bridge software intelligence with physical automation.
+
+- [ ] **IoT Device Gateway** – support for scanners, conveyor sensors, and RFID gateways (MQTT protocol).  
+- [ ] **Computer Vision QC** – real-time camera validation of SKU color/size using trained models.  
+- [ ] **Pick-to-Light / Voice Picking Integration** – REST endpoints for hardware signals.  
+- [ ] **AMR (Autonomous Mobile Robot) Connector** – support for robot fleets to handle bin transfers.  
+- [ ] **3D Rack Mapping** – visual overlay of rack temperature, utilization, and movement via WebGL.  
+- [ ] **Smart Safety Alerts** – detect unsafe item stacking or congestion via camera analytics.
+
+**Deliverables**
+- IoT microservice running in Docker with MQTT bridge.  
+- Angular “Live Warehouse View” dashboard with camera feeds and IoT alerts.  
+- Computer vision inference service integrated via Python microservice.
+
+---
+
+## Phase 12 — Globalization, Compliance & Partner Scale
+🎯 **Goal:** Achieve global enterprise readiness and brand trust.
+
+- [ ] **Region-Based Multi-Cluster Architecture** (US, EU, APAC).  
+- [ ] **Localization & Multi-Currency Support.**  
+- [ ] **SSO (Okta, Azure AD) + MFA.**  
+- [ ] **SOC 2 / ISO 27001 Compliance Preparation.**  
+- [ ] **Blockchain-Backed Traceability** for high-value apparel items.  
+- [ ] **White-Label SaaS Mode** – enable 3PLs to resell FulfillFlow under their brand.  
+- [ ] **Partner Revenue Share System** – automated billing for white-label and API-based partners.  
+- [ ] **ESG Dashboard** – track carbon footprint, packaging waste, and freight emissions.  
+- [ ] **VR Warehouse Visualization** – immersive layout planning and staff training.
+
+**Deliverables**
+- Regional cluster deployment with tenant management.  
+- Enterprise authentication and logging integrations.  
+- Partner billing configuration through subscription engine.  
+- Compliance documentation and audit trail logging.  
+
+---
+
+## Phase 13 — Continuous Intelligence & Enterprise Services *(Optional Future Track)*
+🎯 **Goal:** Make FulfillFlow the “Smart Brain” of global fulfillment.
+
+- [ ] **AI Co-Pilot Assistant** – generates daily slotting plans, staffing schedules, and optimization insights.  
+- [ ] **Cross-Customer Benchmarking Engine** – anonymized metrics for pick rate, accuracy, and cost/order.  
+- [ ] **Green Optimization Recommendations** – reduce travel distance and minimize packaging waste.  
+- [ ] **ChatOps Integration** – Slack / Teams alerts for KPIs, queues, and system health.  
+- [ ] **Enterprise Data Warehouse Connector** – integrate Snowflake or BigQuery.  
+- [ ] **Real-Time Cost Simulation Engine** – “what-if” modeling for freight, labor, or carrier choice.
+
+---
+
+### 🧩 Summary: Strategic Evolution Path
+
+| Phase | Focus | Outcome |
+|--------|--------|----------|
+| **9** | AI & Predictive Ops | Autonomous warehouse optimization |
+| **10** | Integration Marketplace | Platform differentiation |
+| **11** | Robotics & IoT | Physical automation and smart QC |
+| **12** | Global Enterprise & Compliance | Enterprise adoption and white-label scalability |
+| **13** | Continuous Intelligence | Strategic insights and ecosystem leadership |
+
+---
+
+### 📅 Suggested Timeline Overview
+| Quarter | Milestone | Focus |
+|----------|------------|--------|
+| **Q1–Q2 2026** | Phase 9 | Intelligent Operations (AI + Forecasting) |
+| **Q3 2026** | Phase 10 | Integration Marketplace & SDKs |
+| **Q4 2026–Q1 2027** | Phase 11 | Robotics & IoT Integration |
+| **Q2–Q3 2027** | Phase 12 | Global Compliance & Partner Scaling |
+| **Q4 2027+** | Phase 13 | Continuous Intelligence & Enterprise Services |
+
+---
+
+**Author:** Bao Dang  
+**Date:** October 31, 2025  
+**Project:** FulfillFlow WMS SaaS — Extended Roadmap

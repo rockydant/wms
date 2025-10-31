@@ -163,9 +163,7 @@ export class DashboardService {
    * Get warehouse metrics
    */
   private async getWarehouseMetrics(warehouseId?: string): Promise<any> {
-    const locations = warehouseId
-      ? await this.warehouseService.findByWarehouse(warehouseId)
-      : await this.warehouseService.findAll();
+    const locations = await this.warehouseService.findAllLocations(warehouseId);
 
     const total = locations.length;
     const totalCapacity = locations.reduce((sum, l) => sum + (l.maxCapacity || 0), 0);
@@ -196,7 +194,8 @@ export class DashboardService {
    * Get today's reports
    */
   private async getTodayReports(): Promise<any> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     try {
       const receiving = await this.reportsService.getDailyReceivingReport(today);
@@ -229,10 +228,10 @@ export class DashboardService {
       const dateStr = date.toISOString().split('T')[0];
 
       try {
-        const dayReport = await this.reportsService.getDailyShipmentReport(dateStr);
+        const dayReport = await this.reportsService.getDailyShipmentReport(date);
         trends.push({
           date: dateStr,
-          shipments: dayReport?.total || 0,
+          shipments: dayReport?.totalShipments || 0,
         });
       } catch {
         trends.push({

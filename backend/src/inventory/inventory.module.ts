@@ -25,3 +25,4 @@ import { PickingItem } from '../picking/entities/picking-item.entity';
   providers: [InventoryService, AnomalyDetectionService],
   exports: [InventoryService, AnomalyDetectionService],
 })
+export class InventoryModule {}

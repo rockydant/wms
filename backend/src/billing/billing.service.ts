@@ -28,13 +28,30 @@ export class BillingService {
     // Generate invoice number
     const invoiceNumber = `INV-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
 
-    const invoice = this.invoiceRepository.create({
+    // Convert date strings to Date objects for entity
+    const invoiceData: any = {
       ...createDto,
       invoiceNumber,
       status: InvoiceStatus.DRAFT,
-    });
+    };
+    
+    // Convert ISO date strings to Date objects if provided
+    if (createDto.billingPeriodStart) {
+      invoiceData.billingPeriodStart = new Date(createDto.billingPeriodStart);
+    }
+    if (createDto.billingPeriodEnd) {
+      invoiceData.billingPeriodEnd = new Date(createDto.billingPeriodEnd);
+    }
+    if (createDto.dueDate) {
+      invoiceData.dueDate = new Date(createDto.dueDate);
+    }
 
-    const savedInvoice = await this.invoiceRepository.save(invoice);
+    const invoice = this.invoiceRepository.create(invoiceData);
+
+    const savedInvoiceResult = await this.invoiceRepository.save(invoice);
+    const savedInvoice: BillingInvoice = Array.isArray(savedInvoiceResult) 
+      ? savedInvoiceResult[0] 
+      : savedInvoiceResult;
 
     // Create invoice items
     const items = createDto.items.map((item) =>
@@ -57,7 +74,8 @@ export class BillingService {
     savedInvoice.total = total;
     savedInvoice.items = items;
 
-    return this.invoiceRepository.save(savedInvoice);
+    const finalResult = await this.invoiceRepository.save(savedInvoice);
+    return Array.isArray(finalResult) ? finalResult[0] : finalResult;
   }
 
   async findAll(customerId?: string): Promise<BillingInvoice[]> {
@@ -184,11 +202,11 @@ export class BillingService {
 
     return this.create({
       customerId,
-      billingPeriodStart: startDate,
-      billingPeriodEnd: endDate,
+      billingPeriodStart: startDate.toISOString(),
+      billingPeriodEnd: endDate.toISOString(),
       billingTypes,
       items,
-      dueDate: new Date(endDate.getTime() + 30 * 24 * 60 * 60 * 1000), // 30 days after end date
+      dueDate: new Date(endDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days after end date
     });
   }
 

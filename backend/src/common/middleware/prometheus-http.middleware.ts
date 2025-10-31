@@ -15,9 +15,9 @@ export class PrometheusHttpMiddleware implements NestMiddleware {
     const metricsService = this.metricsService;
 
     // Capture original end function
-    const originalEnd = res.end;
+    const originalEnd = res.end.bind(res);
 
-    res.end = function (chunk?: any, encoding?: any) {
+    res.end = function (chunk?: any, encoding?: any, cb?: any): any {
       const duration = Date.now() - startTime;
       const route = req.route?.path || req.path || req.url;
       const method = req.method;
@@ -28,7 +28,7 @@ export class PrometheusHttpMiddleware implements NestMiddleware {
       }
 
       // Call original end function
-      originalEnd.call(this, chunk, encoding);
+      return originalEnd(chunk, encoding, cb);
     };
 
     next();

@@ -214,14 +214,14 @@ export class WarehouseController {
   @Get('predictive-heatmap/:warehouseId/recommendations')
   @Roles(Role.SUPER_ADMIN, Role.INVENTORY_LEADER)
   @ApiOperation({ summary: 'Get optimization recommendations from predictive heatmap' })
-  getOptimizationRecommendations(@Param('warehouseId') warehouseId: string) {
+  getPredictiveHeatmapRecommendations(@Param('warehouseId') warehouseId: string) {
     return this.predictiveHeatmapService.getOptimizationRecommendations(warehouseId);
   }
 
   @Get('auto-placement/:warehouseId')
   @Roles(Role.SUPER_ADMIN, Role.INVENTORY_LEADER, Role.RECEIVING)
   @ApiOperation({ summary: 'Get optimal placement recommendations for SKU' })
-  getOptimalPlacement(
+  getAutoPlacementOptimalPlacement(
     @Param('warehouseId') warehouseId: string,
     @Query('sku') sku: string,
     @Query('size') size?: string,

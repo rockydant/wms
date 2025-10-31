@@ -51,12 +51,21 @@ export class DailyConfirmationService {
     });
 
     const orderQueues = await this.orderQueueRepository.find({
-      relations: ['shipment'],
+      relations: [],
     });
 
-    const customerQueues = orderQueues.filter((q) => q.shipment?.customerId === customerId);
+    // Filter by customer - need to load shipments separately if shipmentId exists
+    let customerQueues = orderQueues;
+    if (customerId) {
+      const customerShipments = await this.shipmentRepository.find({
+        where: { customerId },
+        select: ['id', 'customerId'],
+      });
+      const shipmentIds = new Set(customerShipments.map(s => s.id));
+      customerQueues = orderQueues.filter((q) => q.shipmentId && shipmentIds.has(q.shipmentId));
+    }
 
-    // Filter by date
+    // Filter by date - use the shipments variable from above (already loaded with relations)
     const dayShipments = shipments.filter((s) => {
       const shipmentDate = new Date(s.createdAt);
       return shipmentDate >= startDate && shipmentDate <= endDate;

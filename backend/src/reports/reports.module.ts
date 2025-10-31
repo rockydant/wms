@@ -16,6 +16,7 @@ import { OrderQueue } from '../picking/entities/order-queue.entity';
 import { PickingItem } from '../picking/entities/picking-item.entity';
 import { BillingInvoice } from '../billing/entities/billing-invoice.entity';
 import { FreightBooking } from '../freight-booking/entities/freight-booking.entity';
+import { FreightConfig } from '../freight-booking/entities/freight-config.entity';
 import { WarehouseLocation } from '../warehouse/entities/warehouse-location.entity';
 import { Customer } from '../customers/entities/customer.entity';
 
@@ -29,6 +30,7 @@ import { Customer } from '../customers/entities/customer.entity';
       PickingItem,
       BillingInvoice,
       FreightBooking,
+      FreightConfig,
       WarehouseLocation,
       Customer,
     ]),

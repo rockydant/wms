@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderQueue, Priority, OrderType, QueueStatus } from './entities/order-queue.entity';
 import { PickingItem } from './entities/picking-item.entity';
+import { InventoryItem } from '../inventory/entities/inventory-item.entity';
 import { CreateOrderQueueDto } from './dto/create-order-queue.dto';
 import { ShipmentsService } from '../shipments/shipments.service';
 import { InventoryService } from '../inventory/inventory.service';
@@ -17,6 +18,8 @@ export class PickingService {
     private orderQueueRepository: Repository<OrderQueue>,
     @InjectRepository(PickingItem)
     private pickingItemRepository: Repository<PickingItem>,
+    @InjectRepository(InventoryItem)
+    private inventoryItemRepository: Repository<InventoryItem>,
     private shipmentsService: ShipmentsService,
     private inventoryService: InventoryService,
     private barcodesService: BarcodesService,
@@ -64,11 +67,10 @@ export class PickingService {
           savedQueue.id,
         );
 
-        // Update inventory item with picking barcode
+        // Update inventory item with picking barcode directly
+        // We need to save directly since pickingBarcode is not in the DTO
         inventoryItem.pickingBarcode = pickingBarcode;
-        await this.inventoryService.update(inventoryItem.id, {
-          pickingBarcode,
-        });
+        await this.inventoryItemRepository.save(inventoryItem);
 
         // Create picking item
         const pickingItem = this.pickingItemRepository.create({

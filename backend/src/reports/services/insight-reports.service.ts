@@ -7,6 +7,7 @@ import { PurchaseOrder } from '../../receiving/entities/purchase-order.entity';
 import { OrderQueue } from '../../picking/entities/order-queue.entity';
 import { BillingInvoice } from '../../billing/entities/billing-invoice.entity';
 import { FreightBooking } from '../../freight-booking/entities/freight-booking.entity';
+import { FreightConfig } from '../../freight-booking/entities/freight-config.entity';
 import { WarehouseLocation } from '../../warehouse/entities/warehouse-location.entity';
 
 /**
@@ -170,8 +171,8 @@ export class InsightReportsService {
     const invoices = await this.invoiceRepository.find({ where });
     const periodInvoices = invoices.filter(
       (inv) =>
-        new Date(inv.issueDate) >= startDate &&
-        new Date(inv.issueDate) <= endDate,
+        new Date(inv.createdAt) >= startDate &&
+        new Date(inv.createdAt) <= endDate,
     );
 
     const totalRevenue = periodInvoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
@@ -397,12 +398,12 @@ export class InsightReportsService {
 
     const periodInvoices = invoices.filter(
       (inv) =>
-        new Date(inv.issueDate) >= start &&
-        new Date(inv.issueDate) <= end,
+        new Date(inv.createdAt) >= start &&
+        new Date(inv.createdAt) <= end,
     );
 
     // Revenue by month
-    const revenueByMonth = this.groupByMonth(periodInvoices, 'issueDate', 'total');
+    const revenueByMonth = this.groupByMonth(periodInvoices, 'createdAt', 'total');
 
     return {
       period: {
@@ -444,8 +445,8 @@ export class InsightReportsService {
 
     const periodInvoices = invoices.filter(
       (inv) =>
-        new Date(inv.issueDate) >= startDate &&
-        new Date(inv.issueDate) <= endDate,
+        new Date(inv.createdAt) >= startDate &&
+        new Date(inv.createdAt) <= endDate,
     );
 
     const customerRevenue: Record<string, number> = {};

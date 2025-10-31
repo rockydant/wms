@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FreightBooking } from '../entities/freight-booking.entity';
+import { FreightBooking, FreightStatus, CarrierType } from '../entities/freight-booking.entity';
 import { Shipment } from '../../shipments/entities/shipment.entity';
 import { ShipmentStatus } from '../../shipments/entities/shipment.entity';
 
@@ -51,12 +51,12 @@ export class WeekendSchedulingService {
 
     // Create freight booking with weekend flag
     const booking = this.freightBookingRepository.create({
-      shipmentId,
-      carrier: carrier as any,
-      status: 'Pending' as any,
+      shipmentId: shipmentId,
+      carrierType: carrier as CarrierType,
+      status: FreightStatus.PENDING,
       estimatedDeliveryDate: weekendDate,
-      carrierService: 'Weekend Delivery',
-    });
+      carrierName: 'Weekend Delivery',
+    } as FreightBooking);
 
     return this.freightBookingRepository.save(booking);
   }
@@ -93,7 +93,7 @@ export class WeekendSchedulingService {
   async getWeekendSchedules(startDate?: Date, endDate?: Date): Promise<FreightBooking[]> {
     const query = this.freightBookingRepository
       .createQueryBuilder('booking')
-      .where('booking.carrierService = :service', { service: 'Weekend Delivery' });
+      .where('booking.carrierName = :service', { service: 'Weekend Delivery' });
 
     if (startDate) {
       query.andWhere('booking.estimatedDeliveryDate >= :startDate', { startDate });

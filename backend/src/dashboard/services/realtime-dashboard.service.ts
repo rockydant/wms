@@ -132,12 +132,19 @@ export class RealtimeDashboardService {
 
     const queues = await this.orderQueueRepository.find({
       where,
-      relations: ['pickingItems', 'shipment'],
+      relations: ['pickingItems'],
     });
 
-    const customerQueues = customerId
-      ? queues.filter((q) => q.shipment?.customerId === customerId)
-      : queues;
+    // Filter by customer if needed - load shipments separately if shipmentId exists
+    let customerQueues = queues;
+    if (customerId) {
+      const shipments = await this.shipmentRepository.find({
+        where: { customerId },
+        select: ['id', 'customerId'],
+      });
+      const shipmentIds = new Set(shipments.map(s => s.id));
+      customerQueues = queues.filter((q) => q.shipmentId && shipmentIds.has(q.shipmentId));
+    }
 
     const todayQueues = customerQueues.filter((q) => {
       const queueDate = new Date(q.completedAt || q.createdAt);

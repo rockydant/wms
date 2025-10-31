@@ -2,10 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DepartmentPerformanceService } from './department-performance.service';
-import { PurchaseOrder } from '../../../receiving/entities/purchase-order.entity';
-import { OrderQueue } from '../../../picking/entities/order-queue.entity';
-import { PickingItem } from '../../../picking/entities/picking-item.entity';
-import { Shipment } from '../../../shipments/entities/shipment.entity';
+import { PurchaseOrder } from '../../receiving/entities/purchase-order.entity';
+import { OrderQueue } from '../../picking/entities/order-queue.entity';
+import { PickingItem } from '../../picking/entities/picking-item.entity';
+import { Shipment } from '../../shipments/entities/shipment.entity';
 
 describe('DepartmentPerformanceService', () => {
   let service: DepartmentPerformanceService;

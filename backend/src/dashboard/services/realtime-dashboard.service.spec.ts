@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RealtimeDashboardService } from './realtime-dashboard.service';
-import { Shipment } from '../../../shipments/entities/shipment.entity';
-import { PurchaseOrder } from '../../../receiving/entities/purchase-order.entity';
-import { OrderQueue } from '../../../picking/entities/order-queue.entity';
-import { InventoryItem } from '../../../inventory/entities/inventory-item.entity';
-import { WarehouseLocation } from '../../../warehouse/entities/warehouse-location.entity';
+import { Shipment } from '../../shipments/entities/shipment.entity';
+import { PurchaseOrder } from '../../receiving/entities/purchase-order.entity';
+import { OrderQueue } from '../../picking/entities/order-queue.entity';
+import { InventoryItem } from '../../inventory/entities/inventory-item.entity';
+import { WarehouseLocation } from '../../warehouse/entities/warehouse-location.entity';
 
 describe('RealtimeDashboardService', () => {
   let service: RealtimeDashboardService;

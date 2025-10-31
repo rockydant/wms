@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FreightBookingService } from './freight-booking.service';
 import { FreightBookingController } from './freight-booking.controller';
 import { FreightBooking } from './entities/freight-booking.entity';
+import { FreightConfig } from './entities/freight-config.entity';
 import { WeekendSchedulingService } from './services/weekend-scheduling.service';
 import { FreightManagementService } from './services/freight-management.service';
 import { ShipmentsModule } from '../shipments/shipments.module';
@@ -11,7 +12,7 @@ import { Shipment } from '../shipments/entities/shipment.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([FreightBooking, Shipment]),
+    TypeOrmModule.forFeature([FreightBooking, FreightConfig, Shipment]),
     ShipmentsModule,
     HttpModule,
   ],

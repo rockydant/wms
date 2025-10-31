@@ -17,6 +17,7 @@ describe('PickingRouteOptimizationService', () => {
 
   const mockOrderQueueRepository = {
     findOne: jest.fn(),
+    find: jest.fn(),
   };
 
   const mockPickingItemRepository = {

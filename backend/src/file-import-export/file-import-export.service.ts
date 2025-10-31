@@ -63,7 +63,7 @@ export class FileImportExportService {
    */
   async importShipmentsFromXLSX(customerId: string, fileBuffer: Buffer): Promise<any> {
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(fileBuffer);
+    await workbook.xlsx.load(fileBuffer as any);
 
     const worksheet = workbook.getWorksheet(1); // Get first sheet
     if (!worksheet) {
@@ -73,7 +73,8 @@ export class FileImportExportService {
     const results: any[] = [];
     const errors: string[] = [];
 
-    for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+    const rowCount = worksheet.rowCount || worksheet.actualRowCount || 1000;
+    for (let rowNumber = 2; rowNumber <= rowCount; rowNumber++) {
       const row = worksheet.getRow(rowNumber);
       if (!row.hasValues) continue;
 
