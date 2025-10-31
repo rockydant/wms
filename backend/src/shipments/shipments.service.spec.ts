@@ -150,8 +150,13 @@ describe('ShipmentsService', () => {
         save: jest.fn(),
       };
 
-      mockShipmentRepository.findOne.mockResolvedValue(mockShipment);
-      mockShipment.save.mockResolvedValue({
+      mockShipmentRepository.findOne.mockResolvedValue({
+        ...mockShipment,
+        customer: { id: '1' },
+        warehouse: { id: 'warehouse-1' },
+        items: [],
+      });
+      mockShipmentRepository.save.mockResolvedValue({
         ...mockShipment,
         status: 'Ready',
       });

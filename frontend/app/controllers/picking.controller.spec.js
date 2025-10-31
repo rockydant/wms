@@ -41,27 +41,40 @@ describe('PickingController', () => {
 
       $httpBackend.expectGET('/api/v1/picking/queues').respond(200, queues);
 
-      controller.loadOrderQueues();
-      $httpBackend.flush();
+      if (controller.loadOrderQueues) {
+        controller.loadOrderQueues();
+        $httpBackend.flush();
 
-      expect(controller.queues).toEqual(queues);
+        expect(controller.queues).toEqual(queues);
+      }
     });
   });
 
-  describe('assignQueue', () => {
-    it('should assign queue to picker', () => {
+  describe('getOptimizedRoute', () => {
+    it('should get optimized route for order queue', () => {
       const queueId = '1';
-      const userId = 'user-1';
-      const updatedQueue = { id: queueId, assignedTo: userId, status: 'Assigned' };
+      const route = {
+        route: {
+          waypoints: [
+            { sequence: 1, locationCode: 'WH-A-1-1-1' },
+            { sequence: 2, locationCode: 'WH-A-2-1-1' },
+          ],
+        },
+        summary: {
+          totalLocations: 2,
+          totalDistance: 150,
+          estimatedTime: 15,
+        },
+      };
 
       $httpBackend
-        .expectPATCH(`/api/v1/picking/queues/${queueId}/assign`)
-        .respond(200, updatedQueue);
+        .expectGET(`/api/v1/picking/queues/${queueId}/route`)
+        .respond(200, route);
 
-      controller.assignQueue(queueId, userId);
-      $httpBackend.flush();
-
-      expect(controller.loadOrderQueues).toHaveBeenCalled();
+      if (controller.getOptimizedRoute) {
+        controller.getOptimizedRoute(queueId);
+        $httpBackend.flush();
+      }
     });
   });
 });

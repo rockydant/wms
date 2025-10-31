@@ -2,13 +2,18 @@ describe('ApiService', () => {
   let service;
   let $httpBackend;
   let $rootScope;
+  let AuthService;
 
   beforeEach(angular.mock.module('fulfillflow'));
 
-  beforeEach(inject((_ApiService_, _$httpBackend_, _$rootScope_) => {
+  beforeEach(inject((_ApiService_, _$httpBackend_, _$rootScope_, _AuthService_) => {
     service = _ApiService_;
     $httpBackend = _$httpBackend_;
     $rootScope = _$rootScope_;
+    AuthService = _AuthService_;
+    
+    // Mock AuthService.getToken
+    spyOn(AuthService, 'getToken').and.returnValue('mock-token');
   }));
 
   afterEach(() => {
@@ -22,7 +27,7 @@ describe('ApiService', () => {
       
       $httpBackend.expectGET('/api/v1/customers').respond(200, customers);
       
-      service.getCustomers().then((response) => {
+      service.get('/customers').then((response) => {
         expect(response.data).toEqual(customers);
       });
       
@@ -46,8 +51,58 @@ describe('ApiService', () => {
       
       $httpBackend.expectPOST('/api/v1/shipments', shipmentData).respond(201, responseShipment);
       
-      service.createShipment(shipmentData).then((response) => {
+      service.post('/shipments', shipmentData).then((response) => {
         expect(response.data).toEqual(responseShipment);
+      });
+      
+      $httpBackend.flush();
+    });
+  });
+
+  describe('getReports', () => {
+    it('should fetch insight reports', () => {
+      const report = {
+        period: { startDate: '2025-01-01', endDate: '2025-01-31' },
+        kpis: {},
+      };
+      
+      $httpBackend.expectGET('/api/v1/reports/insights/executive').respond(200, report);
+      
+      service.get('/reports/insights/executive').then((response) => {
+        expect(response.data).toEqual(report);
+      });
+      
+      $httpBackend.flush();
+    });
+
+    it('should fetch department performance reports', () => {
+      const report = {
+        period: { startDate: '2025-01-01', endDate: '2025-01-31' },
+        departments: {},
+      };
+      
+      $httpBackend.expectGET('/api/v1/reports/performance/departments').respond(200, report);
+      
+      service.get('/reports/performance/departments').then((response) => {
+        expect(response.data).toEqual(report);
+      });
+      
+      $httpBackend.flush();
+    });
+  });
+
+  describe('getRealtimeDashboard', () => {
+    it('should fetch realtime dashboard data', () => {
+      const dashboard = {
+        timestamp: new Date().toISOString(),
+        today: {},
+        summary: {},
+      };
+      
+      $httpBackend.expectGET('/api/v1/dashboard/realtime-operations').respond(200, dashboard);
+      
+      service.get('/dashboard/realtime-operations').then((response) => {
+        expect(response.data).toEqual(dashboard);
       });
       
       $httpBackend.flush();
