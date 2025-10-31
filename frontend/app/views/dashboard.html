@@ -1,0 +1,18 @@
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold mb-2">Total Inventory</h3>
+      <p class="text-3xl font-bold text-blue-600">{{ inventorySummary.total || 0 }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold mb-2">Ready Items</h3>
+      <p class="text-3xl font-bold text-green-600">{{ inventorySummary.ready || 0 }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h3 class="text-lg font-semibold mb-2">Recent Shipments</h3>
+      <p class="text-3xl font-bold text-purple-600">{{ recentShipments.length || 0 }}</p>
+    </div>
+  </div>
+</div>

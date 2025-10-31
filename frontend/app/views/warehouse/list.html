@@ -1,0 +1,21 @@
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Warehouse Layout</h1>
+  <div class="bg-white rounded-lg shadow-md overflow-hidden p-6">
+    <h2 class="text-xl font-semibold mb-4">Locations</h2>
+    <div class="grid grid-cols-4 gap-4">
+      <div ng-repeat="location in locations" class="border rounded p-4">
+        <p class="font-bold">{{ location.locationCode }}</p>
+        <p class="text-sm text-gray-600">Utilization: {{ location.utilizationCount }}</p>
+        <p class="text-sm text-gray-600">Capacity: {{ location.currentCapacity }}/{{ location.maxCapacity }}</p>
+      </div>
+    </div>
+    <h2 class="text-xl font-semibold mb-4 mt-6">Heatmap</h2>
+    <div class="grid grid-cols-4 gap-4">
+      <div ng-repeat="location in heatmapData" class="border rounded p-4" 
+           ng-style="{'background-color': 'rgba(59, 130, 246, ' + (location.utilizationCount / 100) + ')'}">
+        <p class="font-bold">{{ location.locationCode }}</p>
+        <p class="text-sm">Utilization: {{ location.utilizationCount }}</p>
+      </div>
+    </div>
+  </div>
+</div>

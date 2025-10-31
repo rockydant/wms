@@ -1,0 +1,49 @@
+{
+  "name": "fulfillflow-frontend",
+  "version": "1.0.0",
+  "description": "FulfillFlow WMS Frontend",
+  "scripts": {
+    "start": "grunt serve",
+    "build": "grunt build",
+    "test": "karma start karma.conf.js",
+    "test:single-run": "karma start karma.conf.js --single-run"
+  },
+  "dependencies": {
+    "angular": "^1.8.3",
+    "angular-animate": "^1.8.3",
+    "angular-cookies": "^1.8.3",
+    "angular-resource": "^1.8.3",
+    "angular-route": "^1.8.3",
+    "angular-sanitize": "^1.8.3",
+    "angular-touch": "^1.8.3",
+    "primeicons": "^6.0.1",
+    "primeng": "^17.6.0",
+    "@angular/router": "^1.0.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-angular-templates": "^1.1.0",
+    "grunt-contrib-clean": "^2.0.1",
+    "grunt-contrib-concat": "^2.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^5.0.0",
+    "grunt-contrib-htmlmin": "^4.0.1",
+    "grunt-contrib-imagemin": "^4.0.0",
+    "grunt-contrib-jshint": "^3.1.1",
+    "grunt-contrib-less": "^3.0.0",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-ng-annotate": "^5.0.0",
+    "jasmine-core": "^5.1.0",
+    "karma": "^6.4.2",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.0",
+    "karma-jasmine": "^5.1.0",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "load-grunt-tasks": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

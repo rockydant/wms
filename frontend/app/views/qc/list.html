@@ -1,0 +1,26 @@
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">QC Verification</h1>
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr ng-repeat="item in items">
+          <td class="px-6 py-4 whitespace-nowrap">{{ item.id }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span ng-if="item.verified" class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Verified</span>
+            <span ng-if="!item.verified" class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button ng-if="!item.verified" ng-click="verifyItem(item)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Verify</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+node_modules/
+.tmp/
+dist/
+.sass-cache/
+coverage/
+.idea/
+*.log
+.DS_Store

@@ -1,0 +1,35 @@
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Reports</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Receiving Report</h2>
+      <div ng-if="receivingReport">
+        <p>Date: {{ receivingReport.date }}</p>
+        <p>Total POs: {{ receivingReport.totalPOs }}</p>
+        <p>Completed: {{ receivingReport.completedPOs }}</p>
+        <p>Pending: {{ receivingReport.pendingPOs }}</p>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Picking Report</h2>
+      <div ng-if="pickingReport">
+        <p>Date: {{ pickingReport.date }}</p>
+        <p>Total Queues: {{ pickingReport.totalQueues }}</p>
+        <p>Completed: {{ pickingReport.completedQueues }}</p>
+        <p>Pending: {{ pickingReport.pendingQueues }}</p>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-xl font-semibold mb-4">Shipment Report</h2>
+      <div ng-if="shipmentReport">
+        <p>Date: {{ shipmentReport.date }}</p>
+        <p>Total Shipments: {{ shipmentReport.totalShipments }}</p>
+        <p>Shipped: {{ shipmentReport.shippedShipments }}</p>
+        <p>Pending: {{ shipmentReport.pendingShipments }}</p>
+      </div>
+    </div>
+  </div>
+</div>
