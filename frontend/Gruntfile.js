@@ -58,8 +58,10 @@ module.exports = function (grunt) {
               serveStatic('.tmp'),
               // Serve bower_components
               serveStatic('./bower_components', { mount: '/bower_components' }),
-              // Serve app directory (this will serve all static files including .js, .css, etc.)
-              serveStatic('app'),
+              // Serve app directory at /app path (this will serve /app/app.js, /app/services/...)
+              serveStatic('app', { mount: '/app' }),
+              // Serve root static files (for favicon, etc.)
+              serveStatic('.'),
               // Fallback middleware - only for routes without file extensions (SPA routing)
               function(req, res, next) {
                 // Skip API calls - they should 404 if not handled by backend

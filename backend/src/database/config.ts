@@ -10,8 +10,8 @@ export const getDatabaseConfig = (
   username: configService.get<string>('DB_USERNAME', 'fulfillflow'),
   password: configService.get<string>('DB_PASSWORD', 'fulfillflow'),
   database: configService.get<string>('DB_DATABASE', 'fulfillflow'),
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+  // Use autoLoadEntities for NestJS webpack compatibility
+  autoLoadEntities: true,
   synchronize: configService.get<string>('NODE_ENV') === 'development',
   logging: configService.get<string>('NODE_ENV') === 'development',
 });

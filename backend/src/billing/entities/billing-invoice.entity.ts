@@ -55,7 +55,7 @@ export class BillingInvoice extends BaseEntity {
   @Column({ nullable: true })
   billingPeriodEnd?: Date;
 
-  @Column({ type: 'enum', enum: BillingType, array: true })
+  @Column({ type: 'varchar', array: true, default: [] })
   billingTypes: BillingType[]; // Types of charges included
 
   @Column({ type: 'text', nullable: true })

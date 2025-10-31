@@ -1,0 +1,95 @@
+<nav class="bg-gray-800 text-white shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo and Brand -->
+      <div class="flex items-center">
+        <a href="/" class="flex items-center space-x-2">
+          <span class="text-xl font-bold">FulfillFlow</span>
+          <span class="text-sm text-gray-400">WMS</span>
+        </a>
+      </div>
+      
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center space-x-1">
+        <a href="/" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/' || $location.path() === ''}">
+          Dashboard
+        </a>
+        <a href="/customers" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/customers'}">
+          Customers
+        </a>
+        <a href="/shipments" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/shipments'}">
+          Shipments
+        </a>
+        <a href="/inventory" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/inventory'}">
+          Inventory
+        </a>
+        <a href="/receiving" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/receiving'}">
+          Receiving
+        </a>
+        <a href="/picking" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/picking'}">
+          Picking
+        </a>
+        <a href="/qc" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/qc'}">
+          QC
+        </a>
+        <a href="/packaging" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/packaging'}">
+          Packaging
+        </a>
+        <a href="/warehouse" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/warehouse'}">
+          Warehouse
+        </a>
+        <a href="/reports" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/reports'}">
+          Reports
+        </a>
+      </div>
+      
+      <!-- User Info and Logout -->
+      <div class="flex items-center space-x-4">
+        <div class="text-sm text-gray-300" ng-if="user">
+          <span class="font-medium">{{ user.firstName }} {{ user.lastName }}</span>
+          <span class="text-gray-400 text-xs">({{ user.role }})</span>
+        </div>
+        <button ng-click="logout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-sm font-medium">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Menu -->
+  <div class="md:hidden bg-gray-800 border-t border-gray-700">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a href="/" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/' || $location.path() === ''}">
+        Dashboard
+      </a>
+      <a href="/customers" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/customers'}">
+        Customers
+      </a>
+      <a href="/shipments" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/shipments'}">
+        Shipments
+      </a>
+      <a href="/inventory" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/inventory'}">
+        Inventory
+      </a>
+      <a href="/receiving" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/receiving'}">
+        Receiving
+      </a>
+      <a href="/picking" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/picking'}">
+        Picking
+      </a>
+      <a href="/qc" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/qc'}">
+        QC
+      </a>
+      <a href="/packaging" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/packaging'}">
+        Packaging
+      </a>
+      <a href="/warehouse" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/warehouse'}">
+        Warehouse
+      </a>
+      <a href="/reports" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" ng-class="{'bg-gray-700': $location.path() === '/reports'}">
+        Reports
+      </a>
+    </div>
+  </div>
+</nav>
+

@@ -12,7 +12,7 @@ export class BillingInvoiceItem extends BaseEntity {
   @JoinColumn({ name: 'invoiceId' })
   invoice: BillingInvoice;
 
-  @Column({ type: 'enum', enum: BillingType })
+  @Column({ type: 'varchar' })
   billingType: BillingType;
 
   @Column()
