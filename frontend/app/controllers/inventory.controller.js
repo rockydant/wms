@@ -4,11 +4,14 @@ angular.module('fulfillflowApp')
 .controller('InventoryCtrl', ['$scope', 'ApiService', '$q', function($scope, ApiService, $q) {
   $scope.inventoryItems = [];
   $scope.customers = [];
+  $scope.inventorySummary = [];
   $scope.showCreateForm = false;
   $scope.showEditForm = false;
+  $scope.showSummaryView = false;
   $scope.error = null;
   $scope.loading = false;
   $scope.selectedCustomerId = '';
+  $scope.quantity = 1;
 
   // Form data
   $scope.newItem = {
@@ -90,6 +93,7 @@ angular.module('fulfillflowApp')
       color: '',
       locationId: ''
     };
+    $scope.quantity = 1;
     $scope.error = null;
   };
 
@@ -119,19 +123,41 @@ angular.module('fulfillflowApp')
     $scope.loading = true;
     $scope.error = null;
 
-    ApiService.post('/inventory', $scope.newItem)
-      .then(function(response) {
-        $scope.inventoryItems.push(response.data);
-        $scope.cancelForm();
-        alert('Inventory item created successfully!');
+    // Use bulk create if quantity > 1
+    if ($scope.quantity > 1) {
+      ApiService.post('/inventory/bulk', {
+        item: $scope.newItem,
+        quantity: $scope.quantity
       })
-      .catch(function(error) {
-        $scope.error = error.data?.message || 'Failed to create inventory item';
-        console.error('Error creating inventory item:', error);
-      })
-      .finally(function() {
-        $scope.loading = false;
-      });
+        .then(function(response) {
+          // Add all created items to the list
+          $scope.inventoryItems = response.data.concat($scope.inventoryItems);
+          $scope.cancelForm();
+          alert('Created ' + response.data.length + ' inventory items successfully!');
+        })
+        .catch(function(error) {
+          $scope.error = error.data?.message || 'Failed to create inventory items';
+          console.error('Error creating inventory items:', error);
+        })
+        .finally(function() {
+          $scope.loading = false;
+        });
+    } else {
+      // Single item create
+      ApiService.post('/inventory', $scope.newItem)
+        .then(function(response) {
+          $scope.inventoryItems.push(response.data);
+          $scope.cancelForm();
+          alert('Inventory item created successfully!');
+        })
+        .catch(function(error) {
+          $scope.error = error.data?.message || 'Failed to create inventory item';
+          console.error('Error creating inventory item:', error);
+        })
+        .finally(function() {
+          $scope.loading = false;
+        });
+    }
   };
 
   // Update inventory item
@@ -191,6 +217,35 @@ angular.module('fulfillflowApp')
         $scope.error = error.data?.message || 'Failed to delete inventory item';
         console.error('Error deleting inventory item:', error);
         alert('Failed to delete inventory item: ' + ($scope.error || 'Unknown error'));
+      })
+      .finally(function() {
+        $scope.loading = false;
+      });
+  };
+
+  // Toggle summary view
+  $scope.toggleSummaryView = function() {
+    $scope.showSummaryView = !$scope.showSummaryView;
+    if ($scope.showSummaryView) {
+      $scope.loadSummary();
+    }
+  };
+
+  // Load inventory summary by SKU
+  $scope.loadSummary = function() {
+    $scope.loading = true;
+    var url = '/inventory/summary/by-sku';
+    if ($scope.selectedCustomerId) {
+      url += '?customerId=' + $scope.selectedCustomerId;
+    }
+    
+    ApiService.get(url)
+      .then(function(response) {
+        $scope.inventorySummary = response.data;
+      })
+      .catch(function(error) {
+        $scope.error = error.data?.message || 'Failed to load inventory summary';
+        console.error('Error loading inventory summary:', error);
       })
       .finally(function() {
         $scope.loading = false;

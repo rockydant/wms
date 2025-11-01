@@ -1,0 +1,185 @@
+<div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Users Management</h1>
+    <button ng-click="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Add User
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create User Form -->
+  <div ng-if="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New User</h2>
+    <form ng-submit="createUser()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Email *</label>
+          <input type="email" ng-model="newUser.email" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Password *</label>
+          <input type="password" ng-model="newUser.password" required minlength="6"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">First Name *</label>
+          <input type="text" ng-model="newUser.firstName" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Last Name *</label>
+          <input type="text" ng-model="newUser.lastName" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Role *</label>
+          <select ng-model="newUser.role" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option ng-repeat="role in roles" value="{{ role }}">{{ role }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer (Optional)</label>
+          <select ng-model="newUser.customerId"
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">None</option>
+            <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">For Customer role users</p>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create User
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Edit User Form -->
+  <div ng-if="showEditForm && editingUser" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Edit User</h2>
+    <form ng-submit="updateUser()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Email *</label>
+          <input type="email" ng-model="editingUser.email" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Password (leave blank to keep current)</label>
+          <input type="password" ng-model="editingUser.password" minlength="6"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <p class="text-xs text-gray-500 mt-1">Minimum 6 characters if changing</p>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">First Name *</label>
+          <input type="text" ng-model="editingUser.firstName" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Last Name *</label>
+          <input type="text" ng-model="editingUser.lastName" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Role *</label>
+          <select ng-model="editingUser.role" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option ng-repeat="role in roles" value="{{ role }}">{{ role }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer (Optional)</label>
+          <select ng-model="editingUser.customerId"
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">None</option>
+            <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">For Customer role users</p>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update User
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showCreateForm && !showEditForm" class="text-center py-8">
+    <p class="text-gray-500">Loading users...</p>
+  </div>
+
+  <!-- Users Table -->
+  <div ng-if="!loading || showCreateForm || showEditForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr ng-repeat="user in users">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ user.email }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.firstName }} {{ user.lastName }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+              {{ user.role }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <span ng-if="user.customer">{{ user.customer.name }}</span>
+            <span ng-if="!user.customer">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span ng-if="user.isActive" class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            <span ng-if="!user.isActive" class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button ng-click="showEdit(user)"
+                      class="text-blue-600 hover:text-blue-900">Edit</button>
+              <button ng-click="toggleActive(user)"
+                      class="text-yellow-600 hover:text-yellow-900">
+                <span ng-if="user.isActive">Deactivate</span>
+                <span ng-if="!user.isActive">Activate</span>
+              </button>
+              <button ng-click="deleteUser(user)"
+                      class="text-red-600 hover:text-red-900">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr ng-if="users.length === 0">
+          <td colspan="6" class="px-6 py-4 text-center text-gray-500">No users found. Click "Add User" to create one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

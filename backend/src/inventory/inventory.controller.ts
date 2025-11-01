@@ -37,6 +37,22 @@ export class InventoryController {
     return this.inventoryService.create(createInventoryItemDto);
   }
 
+  @Post('bulk')
+  @Roles(Role.RECEIVING, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Create multiple inventory items at once' })
+  createBulk(
+    @Body('item') createInventoryItemDto: CreateInventoryItemDto,
+    @Body('quantity') quantity: number,
+  ) {
+    if (!quantity || quantity < 1) {
+      quantity = 1;
+    }
+    if (quantity > 1000) {
+      quantity = 1000; // Limit to prevent abuse
+    }
+    return this.inventoryService.createBulk(createInventoryItemDto, quantity);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all inventory items' })
   findAll(@Query('customerId') customerId?: string) {
@@ -100,5 +116,11 @@ export class InventoryController {
   @ApiOperation({ summary: 'Get anomaly detection summary' })
   getAnomalySummary(@Query('customerId') customerId?: string) {
     return this.anomalyDetectionService.getAnomalySummary(customerId);
+  }
+
+  @Get('summary/by-sku')
+  @ApiOperation({ summary: 'Get inventory summary grouped by SKU with quantities' })
+  getSummaryBySku(@Query('customerId') customerId?: string) {
+    return this.inventoryService.getSummaryBySku(customerId);
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -12,20 +13,40 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(user);
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const user = this.usersRepository.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
+    const savedUser = await this.usersRepository.save(user);
+    // Remove password from response
+    const { password, ...userWithoutPassword } = savedUser;
+    return userWithoutPassword as User;
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    const users = await this.usersRepository.find({
+      relations: ['customer', 'tenant'],
+    });
+    // Remove password from response
+    return users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword as User;
+    });
   }
 
   async findOne(id: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { id } });
+    const user = await this.usersRepository.findOne({ 
+      where: { id },
+      relations: ['customer', 'tenant'],
+    });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return user;
+    // Remove password from response
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword as User;
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -37,8 +58,21 @@ export class UsersService {
   }
 
   async update(id: string, updateData: Partial<User>): Promise<User> {
+    // Hash password if it's being updated
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
     await this.usersRepository.update(id, updateData);
-    return this.findOne(id);
+    const updatedUser = await this.usersRepository.findOne({ 
+      where: { id },
+      relations: ['customer', 'tenant'],
+    });
+    if (!updatedUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    // Remove password from response
+    const { password, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword as User;
   }
 
   async remove(id: string): Promise<void> {

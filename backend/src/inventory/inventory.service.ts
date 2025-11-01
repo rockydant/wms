@@ -36,6 +36,30 @@ export class InventoryService {
     return this.inventoryRepository.save(item);
   }
 
+  async createBulk(createInventoryItemDto: CreateInventoryItemDto, quantity: number): Promise<InventoryItem[]> {
+    // Verify customer exists
+    await this.customersService.findOne(createInventoryItemDto.customerId);
+
+    const items: InventoryItem[] = [];
+    
+    for (let i = 0; i < quantity; i++) {
+      // Generate unique inventory barcode for each item
+      const inventoryBarcode = await this.barcodesService.generateInventoryBarcode(
+        createInventoryItemDto.sku,
+      );
+
+      const item = this.inventoryRepository.create({
+        ...createInventoryItemDto,
+        inventoryBarcode,
+        status: InventoryStatus.IN_TRANSIT,
+      });
+
+      items.push(item);
+    }
+
+    return this.inventoryRepository.save(items);
+  }
+
   async findAll(): Promise<InventoryItem[]> {
     return this.inventoryRepository.find({
       relations: ['customer', 'location'],
@@ -103,5 +127,61 @@ export class InventoryService {
 
   async remove(id: string): Promise<void> {
     await this.inventoryRepository.softDelete(id);
+  }
+
+  async getSummaryBySku(customerId?: string): Promise<any[]> {
+    const query = this.inventoryRepository
+      .createQueryBuilder('item')
+      .select('item.sku', 'sku')
+      .addSelect('item.size', 'size')
+      .addSelect('item.color', 'color')
+      .addSelect('item.status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .groupBy('item.sku')
+      .addGroupBy('item.size')
+      .addGroupBy('item.color')
+      .addGroupBy('item.status');
+
+    if (customerId) {
+      query.where('item.customerId = :customerId', { customerId });
+    }
+
+    const results = await query.getRawMany();
+
+    // Aggregate by SKU
+    const skuMap = new Map<string, any>();
+
+    for (const row of results) {
+      const sku = row.sku;
+      if (!skuMap.has(sku)) {
+        skuMap.set(sku, {
+          sku: row.sku,
+          total: 0,
+          byStatus: {},
+          byVariant: [],
+        });
+      }
+
+      const entry = skuMap.get(sku);
+      const count = parseInt(row.count);
+      entry.total += count;
+      entry.byStatus[row.status] = (entry.byStatus[row.status] || 0) + count;
+
+      // Track variant counts
+      const variantKey = `${row.size}-${row.color}`;
+      const existingVariant = entry.byVariant.find(v => v.key === variantKey);
+      if (existingVariant) {
+        existingVariant.count += count;
+      } else {
+        entry.byVariant.push({
+          key: variantKey,
+          size: row.size,
+          color: row.color,
+          count: count,
+        });
+      }
+    }
+
+    return Array.from(skuMap.values());
   }
 }

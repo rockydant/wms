@@ -53,6 +53,10 @@ angular.module('fulfillflowApp', [
       templateUrl: 'views/reports/list.html',
       controller: 'ReportsCtrl'
     })
+    .when('/users', {
+      templateUrl: 'views/users/list.html',
+      controller: 'UsersCtrl'
+    })
     .otherwise({
       redirectTo: '/'
     });
