@@ -1,36 +1,235 @@
 <div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
 
 <div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">Reports</h1>
-  
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold mb-4">Receiving Report</h2>
-      <div ng-if="receivingReport">
-        <p>Date: {{ receivingReport.date }}</p>
-        <p>Total POs: {{ receivingReport.totalPOs }}</p>
-        <p>Completed: {{ receivingReport.completedPOs }}</p>
-        <p>Pending: {{ receivingReport.pendingPOs }}</p>
-      </div>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Reports & Analytics</h1>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Daily Reports Section -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Daily Reports</h2>
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">Select Date</label>
+      <input type="date" ng-model="reportDate" ng-change="loadReports()"
+             class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
     </div>
     
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold mb-4">Picking Report</h2>
-      <div ng-if="pickingReport">
-        <p>Date: {{ pickingReport.date }}</p>
-        <p>Total Queues: {{ pickingReport.totalQueues }}</p>
-        <p>Completed: {{ pickingReport.completedQueues }}</p>
-        <p>Pending: {{ pickingReport.pendingQueues }}</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Receiving Report</h3>
+        <div ng-if="receivingReport">
+          <p class="text-sm text-gray-600">Date: {{ receivingReport.date }}</p>
+          <p class="text-2xl font-bold text-blue-600 mt-2">{{ receivingReport.totalPOs || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total POs</p>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div>
+              <p class="text-green-600 font-bold">{{ receivingReport.completedPOs || 0 }}</p>
+              <p class="text-gray-500">Completed</p>
+            </div>
+            <div>
+              <p class="text-yellow-600 font-bold">{{ receivingReport.pendingPOs || 0 }}</p>
+              <p class="text-gray-500">Pending</p>
+            </div>
+          </div>
+        </div>
+        <div ng-if="!receivingReport && !loading" class="text-gray-400 text-sm">No data available</div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Picking Report</h3>
+        <div ng-if="pickingReport">
+          <p class="text-sm text-gray-600">Date: {{ pickingReport.date }}</p>
+          <p class="text-2xl font-bold text-purple-600 mt-2">{{ pickingReport.totalQueues || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Queues</p>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div>
+              <p class="text-green-600 font-bold">{{ pickingReport.completedQueues || 0 }}</p>
+              <p class="text-gray-500">Completed</p>
+            </div>
+            <div>
+              <p class="text-yellow-600 font-bold">{{ pickingReport.pendingQueues || 0 }}</p>
+              <p class="text-gray-500">Pending</p>
+            </div>
+          </div>
+        </div>
+        <div ng-if="!pickingReport && !loading" class="text-gray-400 text-sm">No data available</div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Shipment Report</h3>
+        <div ng-if="shipmentReport">
+          <p class="text-sm text-gray-600">Date: {{ shipmentReport.date }}</p>
+          <p class="text-2xl font-bold text-green-600 mt-2">{{ shipmentReport.totalShipments || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Shipments</p>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div>
+              <p class="text-green-600 font-bold">{{ shipmentReport.shippedShipments || 0 }}</p>
+              <p class="text-gray-500">Shipped</p>
+            </div>
+            <div>
+              <p class="text-yellow-600 font-bold">{{ shipmentReport.pendingShipments || 0 }}</p>
+              <p class="text-gray-500">Pending</p>
+            </div>
+          </div>
+        </div>
+        <div ng-if="!shipmentReport && !loading" class="text-gray-400 text-sm">No data available</div>
       </div>
     </div>
-    
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold mb-4">Shipment Report</h2>
-      <div ng-if="shipmentReport">
-        <p>Date: {{ shipmentReport.date }}</p>
-        <p>Total Shipments: {{ shipmentReport.totalShipments }}</p>
-        <p>Shipped: {{ shipmentReport.shippedShipments }}</p>
-        <p>Pending: {{ shipmentReport.pendingShipments }}</p>
+  </div>
+
+  <!-- Realtime Dashboard Section -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Real-Time Operations Dashboard</h2>
+      <button ng-click="loadRealtimeDashboard()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Refresh
+      </button>
+    </div>
+    <div ng-if="realtimeDashboard" class="bg-white rounded-lg shadow-md p-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="text-center">
+          <p class="text-3xl font-bold text-blue-600">{{ realtimeDashboard.today?.receiving?.total || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">POs Today</p>
+          <p class="text-xs text-green-600 mt-1">{{ realtimeDashboard.today?.receiving?.completionRate || 0 }}% Complete</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold text-purple-600">{{ realtimeDashboard.today?.picking?.total || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Queues Today</p>
+          <p class="text-xs text-green-600 mt-1">{{ realtimeDashboard.today?.picking?.completionRate || 0 }}% Complete</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold text-green-600">{{ realtimeDashboard.today?.shipping?.total || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Shipments Today</p>
+          <p class="text-xs text-green-600 mt-1">{{ realtimeDashboard.today?.shipping?.completionRate || 0 }}% Complete</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold text-orange-600">{{ realtimeDashboard.inventory?.totalItems || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Inventory</p>
+          <p class="text-xs text-blue-600 mt-1">{{ realtimeDashboard.inventory?.readyItems || 0 }} Ready</p>
+        </div>
+      </div>
+
+      <!-- Active Operations -->
+      <div ng-if="realtimeDashboard.activeOperations" class="border-t pt-4">
+        <h3 class="text-lg font-bold mb-3">Active Operations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div ng-if="realtimeDashboard.activeOperations.activePOs > 0" class="bg-blue-50 border border-blue-200 rounded p-3">
+            <p class="font-bold text-blue-900">{{ realtimeDashboard.activeOperations.activePOs }} Active POs</p>
+          </div>
+          <div ng-if="realtimeDashboard.activeOperations.activeQueues > 0" class="bg-purple-50 border border-purple-200 rounded p-3">
+            <p class="font-bold text-purple-900">{{ realtimeDashboard.activeOperations.activeQueues }} Active Queues</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ng-if="!realtimeDashboard && !loading" class="text-center py-8 text-gray-400">
+      Click "Refresh" to load realtime dashboard data
+    </div>
+  </div>
+
+  <!-- Executive Insights Section -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Executive Insights</h2>
+      <button ng-click="loadExecutiveInsights()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Load Insights
+      </button>
+    </div>
+    <div class="mb-4 flex items-center gap-4">
+      <label class="block text-gray-700 text-sm font-bold">Date Range</label>
+      <input type="date" ng-model="startDate" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      <span>to</span>
+      <input type="date" ng-model="endDate" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    <div ng-if="executiveInsights" class="bg-white rounded-lg shadow-md p-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="text-center">
+          <p class="text-3xl font-bold text-blue-600">{{ executiveInsights.kpis?.totalShipments || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Shipments</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold text-green-600">{{ executiveInsights.kpis?.avgFulfillmentRate || 0 }}%</p>
+          <p class="text-sm text-gray-600 mt-1">Avg Fulfillment</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold text-purple-600">{{ executiveInsights.kpis?.totalRevenue || 0 | currency }}</p>
+          <p class="text-sm text-gray-600 mt-1">Revenue</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-bold text-orange-600">{{ executiveInsights.kpis?.totalOrders || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Orders</p>
+        </div>
+      </div>
+
+      <!-- Trends -->
+      <div ng-if="executiveInsights.trends && executiveInsights.trends.length > 0" class="border-t pt-4">
+        <h3 class="text-lg font-bold mb-3">Daily Trends</h3>
+        <div class="space-y-2">
+          <div ng-repeat="trend in executiveInsights.trends | limitTo:7" class="flex justify-between items-center border-b pb-2">
+            <div>
+              <p class="text-sm font-medium">{{ trend.date | date:'shortDate' }}</p>
+              <p class="text-xs text-gray-500">{{ trend.shipments }} shipments</p>
+            </div>
+            <div>
+              <span class="text-xs font-semibold"
+                    ng-class="{
+                      'text-green-600': trend.trend === 'increasing',
+                      'text-red-600': trend.trend === 'decreasing',
+                      'text-gray-600': trend.trend === 'stable'
+                    }">
+                {{ trend.trend | uppercase }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Automated Insights -->
+      <div ng-if="executiveInsights.insights && executiveInsights.insights.length > 0" class="border-t pt-4 mt-4">
+        <h3 class="text-lg font-bold mb-3">Automated Insights</h3>
+        <div class="space-y-2">
+          <div ng-repeat="insight in executiveInsights.insights" class="bg-blue-50 border border-blue-200 rounded p-3">
+            <p class="text-sm text-blue-900">{{ insight }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Department Performance Section -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Department Performance</h2>
+      <button ng-click="loadDepartmentPerformance()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Load Performance
+      </button>
+    </div>
+    <div ng-if="departmentPerformance" class="bg-white rounded-lg shadow-md p-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div ng-repeat="dept in departmentPerformance.departments" class="border rounded p-4">
+          <h3 class="font-bold mb-2">{{ dept.name }}</h3>
+          <div class="space-y-1 text-sm">
+            <p>Completion Rate: <span class="font-bold text-green-600">{{ dept.completionRate || 0 }}%</span></p>
+            <p>Avg Time: <span class="font-bold">{{ dept.averageProcessingTime || 0 }}m</span></p>
+            <p class="mt-2">
+              <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                    ng-class="{
+                      'bg-green-100 text-green-800': dept.rating === 'Excellent',
+                      'bg-blue-100 text-blue-800': dept.rating === 'Good',
+                      'bg-yellow-100 text-yellow-800': dept.rating === 'Fair',
+                      'bg-red-100 text-red-800': dept.rating === 'Poor'
+                    }">
+                {{ dept.rating }}
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,23 +1,192 @@
 <div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
 
 <div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">Purchase Orders</h1>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Purchase Orders</h1>
+    <button ng-click="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Create PO
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create PO Form -->
+  <div ng-if="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Purchase Order</h2>
+    <form ng-submit="createPO()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer *</label>
+          <select ng-model="newPO.customerId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Customer</option>
+            <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Add Items Section -->
+      <div class="border-t pt-4 mb-4">
+        <h3 class="text-lg font-bold mb-2">PO Items</h3>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2">
+          <input type="text" ng-model="currentItem.sku" placeholder="SKU" required
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <input type="text" ng-model="currentItem.size" placeholder="Size" required
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <input type="text" ng-model="currentItem.color" placeholder="Color" required
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <input type="number" ng-model="currentItem.expectedQuantity" placeholder="Qty" required min="1"
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <button type="button" ng-click="addItem()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
+            Add Item
+          </button>
+        </div>
+        
+        <!-- Items List -->
+        <div ng-if="newPO.items.length > 0" class="mt-4">
+          <div class="bg-gray-50 rounded p-3">
+            <div ng-repeat="item in newPO.items track by $index" class="flex justify-between items-center mb-2 last:mb-0">
+              <span class="text-sm">{{ item.sku }} - {{ item.size }} / {{ item.color }} (Expected: {{ item.expectedQuantity }})</span>
+              <button type="button" ng-click="removeItem($index)" class="text-red-600 hover:text-red-900 text-sm">Remove</button>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mt-2">Total items: {{ newPO.items.length }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4">
+        <button type="submit" ng-disabled="loading || newPO.items.length === 0"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Purchase Order
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showCreateForm && !showDetailsForm" class="text-center py-8">
+    <p class="text-gray-500">Loading purchase orders...</p>
+  </div>
+
+  <!-- Purchase Orders Table -->
+  <div ng-if="!loading || showCreateForm || showDetailsForm" class="bg-white rounded-lg shadow-md overflow-hidden">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">PO Number</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Warehouse</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr ng-repeat="po in purchaseOrders">
-          <td class="px-6 py-4 whitespace-nowrap">{{ po.poNumber }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ po.status }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ po.createdAt | date }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ po.poNumber }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <span ng-if="po.customer">{{ po.customer.name }}</span>
+            <span ng-if="!po.customer">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <span ng-if="po.warehouse">{{ po.warehouse.name }}</span>
+            <span ng-if="!po.warehouse">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ po.items?.length || 0 }} items</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-yellow-100 text-yellow-800': po.status === 'Pending',
+                    'bg-blue-100 text-blue-800': po.status === 'In Progress',
+                    'bg-green-100 text-green-800': po.status === 'Completed',
+                    'bg-red-100 text-red-800': po.status === 'Cancelled'
+                  }">
+              {{ po.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ po.createdAt | date:'short' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button ng-click="showDetails(po)" 
+                      class="text-blue-600 hover:text-blue-900">Details</button>
+              <button ng-click="completePO(po)"
+                      ng-if="po.status !== 'Completed' && po.status !== 'Cancelled'"
+                      class="text-green-600 hover:text-green-900">Complete</button>
+            </div>
+          </td>
+        </tr>
+        <tr ng-if="purchaseOrders.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No purchase orders found. Click "Create PO" to create one.</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- PO Details Modal -->
+  <div ng-if="showDetailsForm && selectedPO" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" ng-click="cancelForm()">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full m-4 max-h-[90vh] overflow-y-auto" ng-click="$event.stopPropagation()">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-4">PO Details: {{ selectedPO.poNumber }}</h2>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <p class="text-sm text-gray-500">Customer</p>
+            <p class="font-bold" ng-if="selectedPO.customer">{{ selectedPO.customer.name }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Status</p>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-yellow-100 text-yellow-800': selectedPO.status === 'Pending',
+                    'bg-blue-100 text-blue-800': selectedPO.status === 'In Progress',
+                    'bg-green-100 text-green-800': selectedPO.status === 'Completed',
+                    'bg-red-100 text-red-800': selectedPO.status === 'Cancelled'
+                  }">
+              {{ selectedPO.status }}
+            </span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Created</p>
+            <p class="font-bold">{{ selectedPO.createdAt | date:'short' }}</p>
+          </div>
+          <div ng-if="selectedPO.receivedAt">
+            <p class="text-sm text-gray-500">Received At</p>
+            <p class="font-bold">{{ selectedPO.receivedAt | date:'short' }}</p>
+          </div>
+        </div>
+
+        <div class="border-t pt-4">
+          <h3 class="text-lg font-bold mb-3">Items</h3>
+          <div class="bg-gray-50 rounded p-3">
+            <div ng-repeat="item in selectedPO.items" class="mb-2 pb-2 border-b last:mb-0 last:pb-0 last:border-0">
+              <div class="grid grid-cols-4 gap-2 text-sm">
+                <span class="font-medium">{{ item.sku }}</span>
+                <span>{{ item.size }} / {{ item.color }}</span>
+                <span>Expected: {{ item.expectedQuantity }}</span>
+                <span>Received: {{ item.receivedQuantity }}</span>
+              </div>
+            </div>
+            <div ng-if="!selectedPO.items || selectedPO.items.length === 0" class="text-gray-500 text-sm">
+              No items found
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button ng-click="cancelForm()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
