@@ -1,24 +1,139 @@
 <div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
 
 <div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">Customers</h1>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Customers</h1>
+    <button ng-click="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Add Customer
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Customer Form -->
+  <div ng-if="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Customer</h2>
+    <form ng-submit="createCustomer()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Name *</label>
+          <input type="text" ng-model="newCustomer.name" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Email *</label>
+          <input type="email" ng-model="newCustomer.contactEmail" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+          <input type="text" ng-model="newCustomer.contactPhone"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+          <input type="text" ng-model="newCustomer.address"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Customer
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Edit Customer Form -->
+  <div ng-if="showEditForm && editingCustomer" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Edit Customer</h2>
+    <form ng-submit="updateCustomer()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Name *</label>
+          <input type="text" ng-model="editingCustomer.name" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Email *</label>
+          <input type="email" ng-model="editingCustomer.contactEmail" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+          <input type="text" ng-model="editingCustomer.contactPhone"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+          <input type="text" ng-model="editingCustomer.address"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update Customer
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showCreateForm && !showEditForm" class="text-center py-8">
+    <p class="text-gray-500">Loading customers...</p>
+  </div>
+
+  <!-- Customers Table -->
+  <div ng-if="!loading || showCreateForm || showEditForm" class="bg-white rounded-lg shadow-md overflow-hidden">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr ng-repeat="customer in customers">
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.name }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ customer.contactEmail }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ customer.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.contactEmail }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.contactPhone || '-' }}</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <span ng-if="customer.isActive" class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
             <span ng-if="!customer.isActive" class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Inactive</span>
           </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button ng-click="showEdit(customer)"
+                      class="text-blue-600 hover:text-blue-900">Edit</button>
+              <button ng-click="toggleActive(customer)"
+                      class="text-yellow-600 hover:text-yellow-900">
+                <span ng-if="customer.isActive">Deactivate</span>
+                <span ng-if="!customer.isActive">Activate</span>
+              </button>
+              <button ng-click="deleteCustomer(customer)"
+                      class="text-red-600 hover:text-red-900">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr ng-if="customers.length === 0">
+          <td colspan="5" class="px-6 py-4 text-center text-gray-500">No customers found. Click "Add Customer" to create one.</td>
         </tr>
       </tbody>
     </table>
