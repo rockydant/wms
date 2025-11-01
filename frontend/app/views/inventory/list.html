@@ -1,25 +1,166 @@
 <div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
 
 <div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">Inventory</h1>
-  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Inventory</h1>
+    <button ng-click="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Add Item
+    </button>
+  </div>
+
+  <!-- Filter by Customer -->
+  <div class="mb-4 flex items-center gap-4">
+    <label class="block text-gray-700 text-sm font-bold">Filter by Customer:</label>
+    <select ng-model="selectedCustomerId" ng-change="filterByCustomer()" 
+            class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      <option value="">All Customers</option>
+      <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+    </select>
+    <span class="text-sm text-gray-600">{{ inventoryItems.length }} items</span>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Item Form -->
+  <div ng-if="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Inventory Item</h2>
+    <form ng-submit="createItem()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer *</label>
+          <select ng-model="newItem.customerId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Customer</option>
+            <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">SKU *</label>
+          <input type="text" ng-model="newItem.sku" required placeholder="e.g., T-SHIRT-BLUE-M"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Size *</label>
+          <input type="text" ng-model="newItem.size" required placeholder="e.g., M, L, XL"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Color *</label>
+          <input type="text" ng-model="newItem.color" required placeholder="e.g., Blue, Red"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Item
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Edit Item Form -->
+  <div ng-if="showEditForm && editingItem" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Edit Inventory Item</h2>
+    <form ng-submit="updateItem()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer *</label>
+          <select ng-model="editingItem.customerId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Customer</option>
+            <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">SKU *</label>
+          <input type="text" ng-model="editingItem.sku" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Size *</label>
+          <input type="text" ng-model="editingItem.size" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Color *</label>
+          <input type="text" ng-model="editingItem.color" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update Item
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showCreateForm && !showEditForm" class="text-center py-8">
+    <p class="text-gray-500">Loading inventory...</p>
+  </div>
+
+  <!-- Inventory Table -->
+  <div ng-if="!loading || showCreateForm || showEditForm" class="bg-white rounded-lg shadow-md overflow-hidden">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Color</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barcode</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
         <tr ng-repeat="item in inventoryItems">
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.sku }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.size }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.color }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.status }}</td>
-          <td class="px-6 py-4 whitespace-nowrap">{{ item.inventoryBarcode }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <span ng-if="item.customer">{{ item.customer.name }}</span>
+            <span ng-if="!item.customer">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.sku }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.size }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.color }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-gray-100 text-gray-800': item.status === 'In Transit',
+                    'bg-yellow-100 text-yellow-800': item.status === 'Received',
+                    'bg-green-100 text-green-800': item.status === 'Ready',
+                    'bg-blue-100 text-blue-800': item.status === 'Picked',
+                    'bg-purple-100 text-purple-800': item.status === 'Shipped'
+                  }">
+              {{ item.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ item.inventoryBarcode }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button ng-click="showEdit(item)"
+                      class="text-blue-600 hover:text-blue-900">Edit</button>
+              <button ng-click="deleteItem(item)"
+                      class="text-red-600 hover:text-red-900">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr ng-if="inventoryItems.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No inventory items found. Click "Add Item" to create one.</td>
         </tr>
       </tbody>
     </table>
