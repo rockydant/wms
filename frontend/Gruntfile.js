@@ -248,6 +248,7 @@ module.exports = function (grunt) {
             '.htaccess',
             '*.html',
             'views/**/*.html',
+            'styles/**/*.css',
             'images/**/*.{webp,png,jpg,jpeg,svg}',
             'fonts/**/*.*'
           ]
@@ -276,6 +277,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'copy:styles',
       'autoprefixer:server',
       'connect:livereload',
       'watch'

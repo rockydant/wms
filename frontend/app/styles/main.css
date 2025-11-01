@@ -1,0 +1,99 @@
+/* FulfillFlow WMS - Main Styles */
+
+/* Global Touch Optimizations */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Touch-friendly button sizing */
+button, a.button, .btn {
+  min-height: 44px; /* iOS recommended touch target */
+  min-width: 44px;
+  touch-action: manipulation; /* Prevents double-tap zoom delay */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Better touch scrolling */
+body, html {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+/* Input fields touch-friendly - prevents iOS zoom on focus */
+input, select, textarea {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  touch-action: manipulation;
+}
+
+/* Responsive tables on mobile */
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table th, table td {
+    padding: 12px 8px;
+    white-space: nowrap;
+  }
+  
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Mobile-friendly grid layouts */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-cols-6 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Touch-friendly forms */
+@media (max-width: 768px) {
+  form input, form select, form textarea {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  form label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+}
+
+/* Larger touch targets on mobile */
+@media (max-width: 768px) {
+  a {
+    padding: 12px 16px;
+  }
+  
+  .text-sm {
+    font-size: 14px;
+  }
+}
+
+/* Prevent text selection on touch devices for better UX */
+@media (hover: none) and (pointer: coarse) {
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+

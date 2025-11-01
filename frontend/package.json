@@ -15,9 +15,7 @@
     "angular-resource": "^1.8.3",
     "angular-route": "^1.8.3",
     "angular-sanitize": "^1.8.3",
-    "angular-touch": "^1.8.3",
-    "primeicons": "^6.0.1",
-    "primeng": "^17.6.0"
+    "angular-touch": "^1.8.3"
   },
   "devDependencies": {
     "grunt": "^1.6.1",

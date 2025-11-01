@@ -9,13 +9,24 @@ It digitizes your end-to-end operation: from inbound shipment receiving to order
 
 | Layer | Technology |
 |-------|-------------|
-| Frontend | AngularJS + TailwindCSS + PrimeNG |
+| Frontend | AngularJS 1.8 + TailwindCSS (Touch-Optimized) |
 | Backend | NestJS (TypeScript, REST & WebSocket) |
 | Database | PostgreSQL |
 | Queue | BullMQ (Redis) |
 | Containerization | Docker + Docker Compose |
 | Auth | JWT (Role-based Access Control) |
 | Infra | Nginx Reverse Proxy + SSL |
+
+### 📱 Mobile & Touch Optimization
+
+The FulfillFlow UI is fully optimized for touch devices with:
+- **Touch-friendly buttons**: 44x44px minimum touch targets (iOS standard)
+- **Touch-action optimization**: Prevents double-tap zoom delays
+- **Responsive tables**: Horizontal scrolling on mobile devices
+- **Mobile-first navigation**: Hamburger menu for mobile view
+- **iOS-safe inputs**: 16px font size prevents auto-zoom on focus
+- **Touch scrolling**: Smooth momentum scrolling on iOS/Android
+- **Responsive grids**: Auto-collapse to single column on mobile
 
 ---
 
