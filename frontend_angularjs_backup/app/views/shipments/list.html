@@ -1,0 +1,145 @@
+<div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Shipments</h1>
+    <button ng-click="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Create Shipment
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Shipment Form -->
+  <div ng-if="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Shipment</h2>
+    <form ng-submit="createShipment()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer *</label>
+          <select ng-model="newShipment.customerId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Customer</option>
+            <option ng-repeat="customer in customers" value="{{ customer.id }}">{{ customer.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Warehouse</label>
+          <select ng-model="newShipment.warehouseId"
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Warehouse</option>
+            <option ng-repeat="warehouse in warehouses" value="{{ warehouse.id }}">{{ warehouse.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Add Items Section -->
+      <div class="border-t pt-4 mb-4">
+        <h3 class="text-lg font-bold mb-2">Shipment Items</h3>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2">
+          <input type="text" ng-model="currentItem.sku" placeholder="SKU" required
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <input type="text" ng-model="currentItem.size" placeholder="Size" required
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <input type="text" ng-model="currentItem.color" placeholder="Color" required
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <input type="number" ng-model="currentItem.quantity" placeholder="Qty" required min="1"
+                 class="shadow appearance-none border rounded py-2 px-3 text-gray-700 text-sm leading-tight focus:outline-none focus:shadow-outline">
+          <button type="button" ng-click="addItem()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
+            Add Item
+          </button>
+        </div>
+        
+        <!-- Items List -->
+        <div ng-if="newShipment.items.length > 0" class="mt-4">
+          <div class="bg-gray-50 rounded p-3">
+            <div ng-repeat="item in newShipment.items track by $index" class="flex justify-between items-center mb-2 last:mb-0">
+              <span class="text-sm">{{ item.sku }} - {{ item.size }} / {{ item.color }} (x{{ item.quantity }})</span>
+              <button type="button" ng-click="removeItem($index)" class="text-red-600 hover:text-red-900 text-sm">Remove</button>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mt-2">Total items: {{ newShipment.items.length }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4">
+        <button type="submit" ng-disabled="loading || newShipment.items.length === 0"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Shipment
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showCreateForm && !showEditForm" class="text-center py-8">
+    <p class="text-gray-500">Loading shipments...</p>
+  </div>
+
+  <!-- Shipments Table -->
+  <div ng-if="!loading || showCreateForm || showEditForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Warehouse</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr ng-repeat="shipment in shipments">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ shipment.id | limitTo:8 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <span ng-if="shipment.customer">{{ shipment.customer.name }}</span>
+            <span ng-if="!shipment.customer">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <span ng-if="shipment.warehouse">{{ shipment.warehouse.name }}</span>
+            <span ng-if="!shipment.warehouse">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <span ng-if="shipment.fulfilledQuantity > 0">{{ shipment.fulfilledQuantity }} / {{ shipment.totalQuantity }}</span>
+            <span ng-if="shipment.fulfilledQuantity === 0">{{ shipment.totalQuantity }}</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-yellow-100 text-yellow-800': shipment.status === 'Pending',
+                    'bg-blue-100 text-blue-800': shipment.status === 'Receiving',
+                    'bg-green-100 text-green-800': shipment.status === 'Ready',
+                    'bg-orange-100 text-orange-800': shipment.status === 'Partially Shipped',
+                    'bg-purple-100 text-purple-800': shipment.status === 'Shipped'
+                  }">
+              {{ shipment.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ shipment.createdAt | date:'short' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button ng-click="updateStatus(shipment, 'Shipped')" 
+                      ng-if="shipment.status === 'Ready'"
+                      class="text-green-600 hover:text-green-900">Ship</button>
+              <button ng-click="deleteShipment(shipment)"
+                      class="text-red-600 hover:text-red-900">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr ng-if="shipments.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No shipments found. Click "Create Shipment" to create one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

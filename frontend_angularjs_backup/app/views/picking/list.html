@@ -1,0 +1,200 @@
+<div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Picking Queues</h1>
+    <button ng-click="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Create Queue
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Queue Form -->
+  <div ng-if="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Picking Queue</h2>
+    <form ng-submit="createQueue()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Shipment *</label>
+          <select ng-model="newQueue.shipmentId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Ready Shipment</option>
+            <option ng-repeat="shipment in shipments" value="{{ shipment.id }}">
+              {{ shipment.id | limitTo:8 }} - {{ shipment.customer?.name || 'No Customer' }} ({{ shipment.totalQuantity }} items)
+            </option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">Only Ready shipments can be queued for picking</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Queue
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showCreateForm && !showDetailsForm" class="text-center py-8">
+    <p class="text-gray-500">Loading picking queues...</p>
+  </div>
+
+  <!-- Queues Table -->
+  <div ng-if="!loading || showCreateForm || showDetailsForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Queue ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Area</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr ng-repeat="queue in orderQueues">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ queue.id | limitTo:8 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-blue-100 text-blue-800': queue.priority === 'FIFO',
+                    'bg-red-100 text-red-800': queue.priority === 'Rush',
+                    'bg-gray-100 text-gray-800': queue.priority === 'Regular'
+                  }">
+              {{ queue.priority }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-yellow-100 text-yellow-800': queue.status === 'Pending',
+                    'bg-blue-100 text-blue-800': queue.status === 'In Progress',
+                    'bg-green-100 text-green-800': queue.status === 'Completed'
+                  }">
+              {{ queue.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ queue.orderType }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ queue.area }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ queue.pickingItems?.length || 0 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button ng-click="showDetails(queue)" class="text-blue-600 hover:text-blue-900">Details</button>
+              <button ng-click="assignQueue(queue)" 
+                      ng-if="queue.status === 'Pending'"
+                      class="text-green-600 hover:text-green-900">Assign</button>
+              <button ng-click="completePicking(queue)"
+                      ng-if="queue.status === 'In Progress'"
+                      class="text-purple-600 hover:text-purple-900">Complete</button>
+            </div>
+          </td>
+        </tr>
+        <tr ng-if="orderQueues.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No picking queues found. Click "Create Queue" to create one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Queue Details Modal -->
+  <div ng-if="showDetailsForm && selectedQueue" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" ng-click="cancelForm()">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full m-4 max-h-[90vh] overflow-y-auto" ng-click="$event.stopPropagation()">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-4">Queue Details</h2>
+        
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <p class="text-sm text-gray-500">Priority</p>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-blue-100 text-blue-800': selectedQueue.priority === 'FIFO',
+                    'bg-red-100 text-red-800': selectedQueue.priority === 'Rush',
+                    'bg-gray-100 text-gray-800': selectedQueue.priority === 'Regular'
+                  }">
+              {{ selectedQueue.priority }}
+            </span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Status</p>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  ng-class="{
+                    'bg-yellow-100 text-yellow-800': selectedQueue.status === 'Pending',
+                    'bg-blue-100 text-blue-800': selectedQueue.status === 'In Progress',
+                    'bg-green-100 text-green-800': selectedQueue.status === 'Completed'
+                  }">
+              {{ selectedQueue.status }}
+            </span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Order Type</p>
+            <p class="font-bold">{{ selectedQueue.orderType }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Area</p>
+            <p class="font-bold">{{ selectedQueue.area }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Items</p>
+            <p class="font-bold">{{ selectedQueue.pickingItems?.length || 0 }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Created</p>
+            <p class="font-bold">{{ selectedQueue.createdAt | date:'short' }}</p>
+          </div>
+        </div>
+
+        <div class="border-t pt-4 mb-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold">Picking Items</h3>
+            <button ng-click="getOptimizedRoute(selectedQueue)" 
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm">
+              Get Optimized Route
+            </button>
+          </div>
+          <div ng-if="optimizedRoute" class="bg-blue-50 border border-blue-200 rounded p-4 mb-4">
+            <h4 class="font-bold text-blue-900 mb-2">Optimized Route</h4>
+            <p class="text-sm text-blue-800 mb-2">Total Distance: {{ optimizedRoute.totalDistance | number:2 }} units</p>
+            <p class="text-sm text-blue-800 mb-2">Estimated Time: {{ optimizedRoute.estimatedTime | number:1 }} minutes</p>
+            <p class="text-sm text-blue-800">Items: {{ optimizedRoute.pickingItems?.length || 0 }}</p>
+          </div>
+          <div class="bg-gray-50 rounded p-3">
+            <div ng-repeat="item in selectedQueue.pickingItems" class="mb-2 pb-2 border-b last:mb-0 last:pb-0 last:border-0">
+              <div class="grid grid-cols-4 gap-2 text-sm">
+                <span ng-if="item.inventoryItem" class="font-medium">{{ item.inventoryItem.sku }}</span>
+                <span ng-if="!item.inventoryItem">-</span>
+                <span ng-if="item.inventoryItem">{{ item.inventoryItem.size }} / {{ item.inventoryItem.color }}</span>
+                <span ng-if="!item.inventoryItem">-</span>
+                <span ng-if="item.pickedAt">Picked: {{ item.pickedAt | date:'short' }}</span>
+                <span ng-if="!item.pickedAt">Not Picked</span>
+                <span ng-if="item.verified" class="text-green-600 font-semibold">✓ Verified</span>
+                <span ng-if="!item.verified" class="text-yellow-600">Not Verified</span>
+              </div>
+            </div>
+            <div ng-if="!selectedQueue.pickingItems || selectedQueue.pickingItems.length === 0" class="text-gray-500 text-sm">
+              No picking items found
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button ng-click="cancelForm()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

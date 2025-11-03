@@ -1,0 +1,85 @@
+/* FulfillFlow WMS - Global Styles */
+
+/* Global Touch Optimizations */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Touch-friendly button sizing */
+button, .p-button, a.button, .btn {
+  min-height: 44px; /* iOS recommended touch target */
+  min-width: 44px;
+  touch-action: manipulation; /* Prevents double-tap zoom delay */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Better touch scrolling */
+body, html {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+}
+
+/* Input fields touch-friendly - prevents iOS zoom on focus */
+input, select, textarea {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+  touch-action: manipulation;
+}
+
+/* Responsive tables on mobile */
+@media (max-width: 768px) {
+  .p-datatable {
+    font-size: 14px;
+  }
+  
+  .p-datatable table th, .p-datatable table td {
+    padding: 12px 8px;
+  }
+  
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Mobile-friendly grid layouts */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Touch-friendly forms */
+@media (max-width: 768px) {
+  .p-inputtext, .p-dropdown, .p-calendar input {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+}
+
+/* Larger touch targets on mobile */
+@media (max-width: 768px) {
+  a {
+    padding: 12px 16px;
+  }
+}
+
+/* PrimeNG Mobile Improvements */
+@media (max-width: 768px) {
+  .p-dialog {
+    width: 90vw !important;
+    margin: 0 auto;
+  }
+  
+  .p-menu {
+    width: 90vw !important;
+  }
+}

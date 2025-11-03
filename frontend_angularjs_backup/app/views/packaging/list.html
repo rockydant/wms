@@ -1,0 +1,57 @@
+<div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
+
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Packaging</h1>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading" class="text-center py-8">
+    <p class="text-gray-500">Loading ready shipments...</p>
+  </div>
+
+  <!-- Shipments Ready for Packaging -->
+  <div ng-if="!loading" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Shipment ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr ng-repeat="shipment in shipments">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ shipment.id | limitTo:8 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <span ng-if="shipment.customer">{{ shipment.customer.name }}</span>
+            <span ng-if="!shipment.customer">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ shipment.totalQuantity }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+              {{ shipment.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ shipment.createdAt | date:'short' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button ng-click="packageShipment(shipment)" 
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+              Package & Ship
+            </button>
+          </td>
+        </tr>
+        <tr ng-if="shipments.length === 0">
+          <td colspan="6" class="px-6 py-4 text-center text-gray-500">No shipments ready for packaging.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

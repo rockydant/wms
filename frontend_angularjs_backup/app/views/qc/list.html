@@ -1,0 +1,108 @@
+<div ng-include="'views/navbar.html'" ng-controller="NavbarCtrl"></div>
+
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">QC Verification</h1>
+
+  <!-- Error Alert -->
+  <div ng-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Verify Item Form -->
+  <div ng-if="showVerifyForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Verify Item</h2>
+    <form ng-submit="verifyItem()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Inventory Barcode *</label>
+          <input type="text" ng-model="verificationData.inventoryBarcode" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Picking Barcode *</label>
+          <input type="text" ng-model="verificationData.pickingBarcode" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" ng-disabled="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Verify Item
+        </button>
+        <button type="button" ng-click="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div ng-if="loading && !showVerifyForm" class="text-center py-8">
+    <p class="text-gray-500">Loading QC items...</p>
+  </div>
+
+  <!-- QC Items Table -->
+  <div ng-if="!loading || showVerifyForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Queue ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Picked At</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr ng-repeat="item in items">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+            <span ng-if="item.inventoryItem">{{ item.inventoryItem.sku }}</span>
+            <span ng-if="!item.inventoryItem">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.queueId | limitTo:8 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span ng-if="item.verified" class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Verified</span>
+            <span ng-if="!item.verified" class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <span ng-if="item.pickedAt">{{ item.pickedAt | date:'short' }}</span>
+            <span ng-if="!item.pickedAt">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button ng-if="!item.verified" ng-click="showVerify(item)" 
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Verify</button>
+          </td>
+        </tr>
+        <tr ng-if="items.length === 0">
+          <td colspan="5" class="px-6 py-4 text-center text-gray-500">No items pending QC verification.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Order Queues by Status -->
+  <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold mb-4">Order Queues Ready for QC</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div ng-repeat="queue in orderQueues" class="border rounded p-4">
+        <div class="flex justify-between items-start mb-2">
+          <span class="text-sm font-mono">Queue {{ queue.id | limitTo:8 }}</span>
+          <button ng-click="completeQC(queue)"
+                  ng-if="queue.status === 'Completed'"
+                  class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-xs">
+            Complete QC
+          </button>
+        </div>
+        <p class="text-xs text-gray-600">{{ queue.pickingItems?.length || 0 }} items</p>
+        <p class="text-xs text-gray-600 mt-1">
+          Verified: {{ queue.pickingItems?.filter(function(i) { return i.verified; }).length || 0 }}
+        </p>
+      </div>
+      <div ng-if="orderQueues.length === 0" class="col-span-full text-center py-4 text-gray-500 text-sm">
+        No order queues found
+      </div>
+    </div>
+  </div>
+</div>

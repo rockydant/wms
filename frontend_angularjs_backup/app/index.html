@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FulfillFlow - Warehouse Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5.0, minimum-scale=1.0, user-scalable=yes">
+  <base href="/">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Main Styles with Touch Optimizations -->
+  <link rel="stylesheet" href="/.tmp/styles/main.css">
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          touchAction: 'manipulation' // Better touch support
+        }
+      }
+    }
+  </script>
+  
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-route.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-resource.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-cookies.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-sanitize.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular-touch.min.js"></script>
+</head>
+<body ng-app="fulfillflowApp">
+  <div ng-view></div>
+  
+  <!-- Scripts -->
+  <script src="/app/app.js"></script>
+  <script src="/app/services/auth.service.js"></script>
+  <script src="/app/services/api.service.js"></script>
+  <script src="/app/controllers/dashboard.controller.js"></script>
+  <script src="/app/controllers/login.controller.js"></script>
+  <script src="/app/controllers/navbar.controller.js"></script>
+  <script src="/app/controllers/customers.controller.js"></script>
+  <script src="/app/controllers/shipments.controller.js"></script>
+  <script src="/app/controllers/inventory.controller.js"></script>
+  <script src="/app/controllers/receiving.controller.js"></script>
+  <script src="/app/controllers/picking.controller.js"></script>
+  <script src="/app/controllers/qc.controller.js"></script>
+  <script src="/app/controllers/packaging.controller.js"></script>
+  <script src="/app/controllers/warehouse.controller.js"></script>
+  <script src="/app/controllers/reports.controller.js"></script>
+  <script src="/app/controllers/users.controller.js"></script>
+</body>
+</html>
