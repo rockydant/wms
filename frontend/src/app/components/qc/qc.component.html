@@ -1,0 +1,97 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Quality Control</h1>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Verify Form -->
+  <div *ngIf="showVerifyForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Verify Item</h2>
+    <form (ngSubmit)="verifyItem()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Inventory Barcode *</label>
+          <input type="text" [(ngModel)]="verificationData.inventoryBarcode" name="inventoryBarcode" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Picking Barcode *</label>
+          <input type="text" [(ngModel)]="verificationData.pickingBarcode" name="pickingBarcode" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button type="submit" [disabled]="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Verify Item
+        </button>
+        <button type="button" (click)="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !showVerifyForm" class="text-center py-8">
+    <p class="text-gray-500">Loading QC items...</p>
+  </div>
+
+  <!-- Items Table -->
+  <div *ngIf="!loading || showVerifyForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Queue ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Verified</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let item of items">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.queue?.id?.substring(0, 8) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {{ item.inventoryItem?.sku }} - {{ item.inventoryItem?.size }} / {{ item.inventoryItem?.color }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.inventoryItem?.locationId || '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span *ngIf="item.verified" class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Verified</span>
+            <span *ngIf="!item.verified" class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button (click)="showVerify(item)" *ngIf="!item.verified"
+                    class="text-blue-600 hover:text-blue-900">Verify</button>
+          </td>
+        </tr>
+        <tr *ngIf="items.length === 0">
+          <td colspan="5" class="px-6 py-4 text-center text-gray-500">No QC items found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Queues Summary -->
+  <div *ngIf="orderQueues.length > 0" class="mt-6 bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold mb-4">Queues Status</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div *ngFor="let queue of orderQueues" class="border rounded p-4">
+        <p class="font-bold text-sm mb-2">Queue: {{ queue.id?.substring(0, 8) }}</p>
+        <p class="text-sm text-gray-600 mb-2">Items: {{ queue.pickingItems?.length || 0 }}</p>
+        <button (click)="completeQC(queue)" 
+                *ngIf="isQueueVerified(queue)"
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">
+          Complete QC
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

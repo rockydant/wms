@@ -1,0 +1,220 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Inventory</h1>
+    <div class="flex gap-2">
+      <button (click)="toggleSummaryView()" 
+              [ngClass]="showSummaryView ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'"
+              class="text-white font-bold py-2 px-4 rounded">
+        <span *ngIf="!showSummaryView">📊 View Summary</span>
+        <span *ngIf="showSummaryView">📋 View Details</span>
+      </button>
+      <button (click)="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        + Add Item
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter by Customer -->
+  <div class="mb-4 flex items-center gap-4">
+    <label class="block text-gray-700 text-sm font-bold">Filter by Customer:</label>
+    <select [(ngModel)]="selectedCustomerId" (ngModelChange)="filterByCustomer()" 
+            class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      <option value="">All Customers</option>
+      <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.name }}</option>
+    </select>
+    <span class="text-sm text-gray-600" *ngIf="!showSummaryView">{{ inventoryItems.length }} items</span>
+    <span class="text-sm text-gray-600" *ngIf="showSummaryView">{{ inventorySummary.length }} SKUs</span>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Item Form -->
+  <div *ngIf="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Inventory Item</h2>
+    <form (ngSubmit)="createItem()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer *</label>
+          <select [(ngModel)]="newItem.customerId" name="customerId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Customer</option>
+            <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">SKU *</label>
+          <input type="text" [(ngModel)]="newItem.sku" name="sku" required placeholder="e.g., T-SHIRT-BLUE-M"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Size *</label>
+          <input type="text" [(ngModel)]="newItem.size" name="size" required placeholder="e.g., M, L, XL"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Color *</label>
+          <input type="text" [(ngModel)]="newItem.color" name="color" required placeholder="e.g., Blue, Red"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
+          <input type="number" [(ngModel)]="quantity" name="quantity" min="1" max="1000" value="1" placeholder="How many items?"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <p class="text-xs text-gray-500 mt-1">Creates multiple items with unique barcodes</p>
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" [disabled]="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Item
+        </button>
+        <button type="button" (click)="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Edit Item Form -->
+  <div *ngIf="showEditForm && editingItem" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Edit Inventory Item</h2>
+    <form (ngSubmit)="updateItem()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Customer *</label>
+          <select [(ngModel)]="editingItem.customerId" name="editCustomerId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Customer</option>
+            <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.name }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">SKU *</label>
+          <input type="text" [(ngModel)]="editingItem.sku" name="editSku" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Size *</label>
+          <input type="text" [(ngModel)]="editingItem.size" name="editSize" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Color *</label>
+          <input type="text" [(ngModel)]="editingItem.color" name="editColor" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" [disabled]="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Update Item
+        </button>
+        <button type="button" (click)="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !showCreateForm && !showEditForm" class="text-center py-8">
+    <p class="text-gray-500">Loading inventory...</p>
+  </div>
+
+  <!-- Inventory Summary View -->
+  <div *ngIf="!loading && showSummaryView && !showCreateForm && !showEditForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">By Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Variants</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let summary of inventorySummary">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ summary.sku }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <span class="text-2xl font-bold text-blue-600">{{ summary.total }}</span>
+          </td>
+          <td class="px-6 py-4 text-sm">
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let statusEntry of getStatusEntries(summary.byStatus)" 
+                    class="px-2 py-1 text-xs font-semibold rounded-full"
+                    [ngClass]="getStatusClass(statusEntry.key)">
+                {{ statusEntry.key }}: {{ statusEntry.value }}
+              </span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-sm">
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let variant of summary.byVariant" 
+                    class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-semibold rounded">
+                {{ variant.size }}/{{ variant.color }}: {{ variant.count }}
+              </span>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="inventorySummary.length === 0">
+          <td colspan="4" class="px-6 py-4 text-center text-gray-500">No inventory summary available.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Inventory Table -->
+  <div *ngIf="!loading && !showSummaryView && !showCreateForm && !showEditForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Color</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Barcode</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let item of inventoryItems">
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <span *ngIf="item.customer">{{ item.customer.name }}</span>
+            <span *ngIf="!item.customer">-</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ item.sku }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.size }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.color }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  [ngClass]="getStatusClass(item.status)">
+              {{ item.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ item.inventoryBarcode }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button (click)="showEdit(item)"
+                      class="text-blue-600 hover:text-blue-900">Edit</button>
+              <button (click)="deleteItem(item)"
+                      class="text-red-600 hover:text-red-900">Delete</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="inventoryItems.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No inventory items found. Click "Add Item" to create one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

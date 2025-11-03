@@ -1,0 +1,109 @@
+<nav class="bg-gray-800 text-white shadow-lg">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo and Brand -->
+      <div class="flex items-center">
+        <a routerLink="/" class="flex items-center space-x-2">
+          <span class="text-xl font-bold">FulfillFlow</span>
+          <span class="text-sm text-gray-400">WMS</span>
+        </a>
+      </div>
+      
+      <!-- Mobile Menu Button -->
+      <button (click)="toggleMobileMenu()" class="md:hidden flex items-center justify-center p-2 rounded-md text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-white">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path *ngIf="!mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <path *ngIf="mobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center space-x-1">
+        <a routerLink="/" [class.bg-gray-700]="isActiveRoute('/')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Dashboard
+        </a>
+        <a routerLink="/customers" [class.bg-gray-700]="isActiveRoute('/customers')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Customers
+        </a>
+        <a routerLink="/shipments" [class.bg-gray-700]="isActiveRoute('/shipments')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Shipments
+        </a>
+        <a routerLink="/inventory" [class.bg-gray-700]="isActiveRoute('/inventory')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Inventory
+        </a>
+        <a routerLink="/receiving" [class.bg-gray-700]="isActiveRoute('/receiving')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Receiving
+        </a>
+        <a routerLink="/picking" [class.bg-gray-700]="isActiveRoute('/picking')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Picking
+        </a>
+        <a routerLink="/qc" [class.bg-gray-700]="isActiveRoute('/qc')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          QC
+        </a>
+        <a routerLink="/packaging" [class.bg-gray-700]="isActiveRoute('/packaging')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Packaging
+        </a>
+        <a routerLink="/warehouse" [class.bg-gray-700]="isActiveRoute('/warehouse')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Warehouse
+        </a>
+        <a routerLink="/reports" [class.bg-gray-700]="isActiveRoute('/reports')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Reports
+        </a>
+        <a routerLink="/users" [class.bg-gray-700]="isActiveRoute('/users')" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700">
+          Users
+        </a>
+      </div>
+      
+      <!-- User Info and Logout -->
+      <div class="flex items-center space-x-4">
+        <div class="text-sm text-gray-300" *ngIf="user">
+          <span class="font-medium">{{ user.firstName }} {{ user.lastName }}</span>
+          <span class="text-gray-400 text-xs">({{ user.role }})</span>
+        </div>
+        <button (click)="logout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md text-sm font-medium">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Mobile Menu -->
+  <div *ngIf="mobileMenuOpen" class="md:hidden bg-gray-800 border-t border-gray-700">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <a routerLink="/" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Dashboard
+      </a>
+      <a routerLink="/customers" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/customers')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Customers
+      </a>
+      <a routerLink="/shipments" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/shipments')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Shipments
+      </a>
+      <a routerLink="/inventory" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/inventory')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Inventory
+      </a>
+      <a routerLink="/receiving" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/receiving')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Receiving
+      </a>
+      <a routerLink="/picking" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/picking')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Picking
+      </a>
+      <a routerLink="/qc" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/qc')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        QC
+      </a>
+      <a routerLink="/packaging" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/packaging')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Packaging
+      </a>
+      <a routerLink="/warehouse" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/warehouse')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Warehouse
+      </a>
+      <a routerLink="/reports" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/reports')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Reports
+      </a>
+      <a routerLink="/users" (click)="closeMobileMenu()" [class.bg-gray-700]="isActiveRoute('/users')" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">
+        Users
+      </a>
+    </div>
+  </div>
+</nav>
+

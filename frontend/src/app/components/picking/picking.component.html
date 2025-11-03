@@ -1,0 +1,172 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Picking Queues</h1>
+    <button (click)="showCreate()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      + Create Queue
+    </button>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Queue Form -->
+  <div *ngIf="showCreateForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Picking Queue</h2>
+    <form (ngSubmit)="createQueue()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Shipment *</label>
+          <select [(ngModel)]="newQueue.shipmentId" name="shipmentId" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Ready Shipment</option>
+            <option *ngFor="let shipment of shipments" [value]="shipment.id">
+              {{ shipment.id?.substring(0, 8) }} - {{ shipment.customer?.name || 'No Customer' }} ({{ shipment.totalQuantity }} items)
+            </option>
+          </select>
+          <p class="text-xs text-gray-500 mt-1">Only Ready shipments can be queued for picking</p>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4">
+        <button type="submit" [disabled]="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Queue
+        </button>
+        <button type="button" (click)="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !showCreateForm && !showDetailsForm" class="text-center py-8">
+    <p class="text-gray-500">Loading picking queues...</p>
+  </div>
+
+  <!-- Queues Table -->
+  <div *ngIf="!loading || showCreateForm || showDetailsForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Queue ID</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Area</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let queue of orderQueues">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ queue.id?.substring(0, 8) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  [ngClass]="getPriorityClass(queue.priority)">
+              {{ queue.priority }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  [ngClass]="getStatusClass(queue.status)">
+              {{ queue.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ queue.orderType }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ queue.area }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ queue.pickingItems?.length || 0 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button (click)="showDetails(queue)" class="text-blue-600 hover:text-blue-900">Details</button>
+              <button (click)="assignQueue(queue)" 
+                      *ngIf="queue.status === 'Pending'"
+                      class="text-green-600 hover:text-green-900">Assign</button>
+              <button (click)="completePicking(queue)"
+                      *ngIf="queue.status === 'In Progress'"
+                      class="text-purple-600 hover:text-purple-900">Complete</button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="orderQueues.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">No picking queues found. Click "Create Queue" to create one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Queue Details Modal -->
+  <div *ngIf="showDetailsForm && selectedQueue" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="cancelForm()">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full m-4 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-4">Queue Details</h2>
+        
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div>
+            <p class="text-sm text-gray-500">Priority</p>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  [ngClass]="getPriorityClass(selectedQueue.priority)">
+              {{ selectedQueue.priority }}
+            </span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Status</p>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                  [ngClass]="getStatusClass(selectedQueue.status)">
+              {{ selectedQueue.status }}
+            </span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Order Type</p>
+            <p class="font-bold">{{ selectedQueue.orderType }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Area</p>
+            <p class="font-bold">{{ selectedQueue.area }}</p>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Items</p>
+            <p class="font-bold">{{ selectedQueue.pickingItems?.length || 0 }}</p>
+          </div>
+        </div>
+
+        <div class="border-t pt-4 mb-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold">Picking Items</h3>
+            <button (click)="getOptimizedRoute(selectedQueue!)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm">
+              Get Optimized Route
+            </button>
+          </div>
+          <div class="bg-gray-50 rounded p-3">
+            <div *ngFor="let item of selectedQueue.pickingItems" class="mb-2 pb-2 border-b last:mb-0 last:pb-0 last:border-0 text-sm">
+              {{ item.sku }} - {{ item.size }} / {{ item.color }} (Location: {{ item.locationId }})
+            </div>
+            <div *ngIf="!selectedQueue.pickingItems || selectedQueue.pickingItems.length === 0" class="text-gray-500 text-sm">
+              No items found
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="optimizedRoute" class="border-t pt-4 mb-4">
+          <h3 class="text-lg font-bold mb-3">Optimized Route</h3>
+          <div class="bg-blue-50 rounded p-3">
+            <pre class="text-sm">{{ optimizedRoute | json }}</pre>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button (click)="cancelForm()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

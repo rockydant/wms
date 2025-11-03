@@ -1,0 +1,154 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">Reports & Analytics</h1>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Daily Reports Section -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Daily Reports</h2>
+    <div class="mb-4">
+      <label class="block text-gray-700 text-sm font-bold mb-2">Select Date</label>
+      <input type="date" [(ngModel)]="reportDate" (ngModelChange)="onDateChange()" name="reportDate"
+             class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Receiving Report</h3>
+        <div *ngIf="receivingReport">
+          <p class="text-sm text-gray-600">Date: {{ receivingReport.date }}</p>
+          <p class="text-2xl font-bold text-blue-600 mt-2">{{ receivingReport.totalPOs || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total POs</p>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div>
+              <p class="text-green-600 font-bold">{{ receivingReport.completedPOs || 0 }}</p>
+              <p class="text-gray-500">Completed</p>
+            </div>
+            <div>
+              <p class="text-yellow-600 font-bold">{{ receivingReport.pendingPOs || 0 }}</p>
+              <p class="text-gray-500">Pending</p>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!receivingReport && !loading" class="text-gray-400 text-sm">No data available</div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Picking Report</h3>
+        <div *ngIf="pickingReport">
+          <p class="text-sm text-gray-600">Date: {{ pickingReport.date }}</p>
+          <p class="text-2xl font-bold text-purple-600 mt-2">{{ pickingReport.totalQueues || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Queues</p>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div>
+              <p class="text-green-600 font-bold">{{ pickingReport.completedQueues || 0 }}</p>
+              <p class="text-gray-500">Completed</p>
+            </div>
+            <div>
+              <p class="text-yellow-600 font-bold">{{ pickingReport.pendingQueues || 0 }}</p>
+              <p class="text-gray-500">Pending</p>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!pickingReport && !loading" class="text-gray-400 text-sm">No data available</div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Shipment Report</h3>
+        <div *ngIf="shipmentReport">
+          <p class="text-sm text-gray-600">Date: {{ shipmentReport.date }}</p>
+          <p class="text-2xl font-bold text-green-600 mt-2">{{ shipmentReport.totalShipments || 0 }}</p>
+          <p class="text-sm text-gray-600 mt-1">Total Shipments</p>
+          <div class="grid grid-cols-2 gap-2 mt-4 text-sm">
+            <div>
+              <p class="text-green-600 font-bold">{{ shipmentReport.shippedShipments || 0 }}</p>
+              <p class="text-gray-500">Shipped</p>
+            </div>
+            <div>
+              <p class="text-yellow-600 font-bold">{{ shipmentReport.pendingShipments || 0 }}</p>
+              <p class="text-gray-500">Pending</p>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!shipmentReport && !loading" class="text-gray-400 text-sm">No data available</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights Section -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4">Insights & Analytics</h2>
+    <div class="mb-4 flex gap-4 items-end">
+      <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2">Customer (Optional)</label>
+        <select [(ngModel)]="selectedCustomerId" name="customerId"
+                class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <option value="">All Customers</option>
+          <option *ngFor="let customer of customers" [value]="customer.id">{{ customer.name }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2">Start Date</label>
+        <input type="date" [(ngModel)]="startDate" name="startDate"
+               class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+      <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2">End Date</label>
+        <input type="date" [(ngModel)]="endDate" name="endDate"
+               class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+      </div>
+      <div class="flex gap-2">
+        <button (click)="loadExecutiveInsights()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Executive Insights
+        </button>
+        <button (click)="loadFinancialSummary()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+          Financial Summary
+        </button>
+        <button (click)="loadDepartmentPerformance()" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+          Department Performance
+        </button>
+      </div>
+    </div>
+
+    <!-- Executive Insights -->
+    <div *ngIf="executiveInsights" class="bg-white rounded-lg shadow-md p-6 mb-4">
+      <h3 class="text-xl font-bold mb-4">Executive Insights</h3>
+      <pre class="text-sm overflow-auto">{{ executiveInsights | json }}</pre>
+    </div>
+
+    <!-- Financial Summary -->
+    <div *ngIf="financialSummary" class="bg-white rounded-lg shadow-md p-6 mb-4">
+      <h3 class="text-xl font-bold mb-4">Financial Summary</h3>
+      <pre class="text-sm overflow-auto">{{ financialSummary | json }}</pre>
+    </div>
+
+    <!-- Department Performance -->
+    <div *ngIf="departmentPerformance" class="bg-white rounded-lg shadow-md p-6 mb-4">
+      <h3 class="text-xl font-bold mb-4">Department Performance</h3>
+      <pre class="text-sm overflow-auto">{{ departmentPerformance | json }}</pre>
+    </div>
+  </div>
+
+  <!-- Realtime Dashboard Section -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Real-Time Operations Dashboard</h2>
+      <button (click)="loadRealtimeDashboard()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Refresh
+      </button>
+    </div>
+    <div *ngIf="realtimeDashboard" class="bg-white rounded-lg shadow-md p-6">
+      <pre class="text-sm overflow-auto">{{ realtimeDashboard | json }}</pre>
+    </div>
+    <div *ngIf="!realtimeDashboard && !loading" class="text-center py-8 text-gray-400">
+      <p>Click "Refresh" to load real-time dashboard data</p>
+    </div>
+  </div>
+</div>
+

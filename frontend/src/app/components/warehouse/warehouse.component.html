@@ -1,0 +1,204 @@
+<app-navbar></app-navbar>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Warehouse Management</h1>
+    <div class="flex gap-2">
+      <button (click)="showCreateWarehouse()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        + Add Warehouse
+      </button>
+      <button (click)="showCreateLocation()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        + Add Location
+      </button>
+      <button (click)="refreshHeatmap()" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+        🔄 Refresh Heatmap
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p class="font-bold">Error:</p>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Create Warehouse Form -->
+  <div *ngIf="showCreateWarehouseForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Warehouse</h2>
+    <form (ngSubmit)="createWarehouse()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Name *</label>
+          <input type="text" [(ngModel)]="newWarehouse.name" name="warehouseName" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Code</label>
+          <input type="text" [(ngModel)]="newWarehouse.code" name="warehouseCode" placeholder="WH-001"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+          <input type="text" [(ngModel)]="newWarehouse.address" name="warehouseAddress"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">City</label>
+          <input type="text" [(ngModel)]="newWarehouse.city" name="warehouseCity"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">State</label>
+          <input type="text" [(ngModel)]="newWarehouse.state" name="warehouseState"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">ZIP Code</label>
+          <input type="text" [(ngModel)]="newWarehouse.zipCode" name="warehouseZip"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Country</label>
+          <input type="text" [(ngModel)]="newWarehouse.country" name="warehouseCountry"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Contact Phone</label>
+          <input type="text" [(ngModel)]="newWarehouse.contactPhone" name="warehousePhone"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Contact Email</label>
+          <input type="email" [(ngModel)]="newWarehouse.contactEmail" name="warehouseEmail"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" [disabled]="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Warehouse
+        </button>
+        <button type="button" (click)="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Create Location Form -->
+  <div *ngIf="showCreateLocationForm" class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create New Warehouse Location</h2>
+    <form (ngSubmit)="createLocation()">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Warehouse *</label>
+          <select [(ngModel)]="newLocation.warehouseId" name="locationWarehouse" required
+                  class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select Warehouse</option>
+            <option *ngFor="let warehouse of warehouses" [value]="warehouse.id">{{ warehouse.name }} ({{ warehouse.code }})</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Area *</label>
+          <input type="text" [(ngModel)]="newLocation.area" name="locationArea" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Column *</label>
+          <input type="text" [(ngModel)]="newLocation.column" name="locationColumn" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Rack *</label>
+          <input type="text" [(ngModel)]="newLocation.rack" name="locationRack" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Bin *</label>
+          <input type="text" [(ngModel)]="newLocation.bin" name="locationBin" required
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-bold mb-2">Max Capacity</label>
+          <input type="number" [(ngModel)]="newLocation.maxCapacity" name="locationCapacity" min="1"
+                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button type="submit" [disabled]="loading"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Create Location
+        </button>
+        <button type="button" (click)="cancelForm()"
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading && !showCreateWarehouseForm && !showCreateLocationForm" class="text-center py-8">
+    <p class="text-gray-500">Loading warehouse data...</p>
+  </div>
+
+  <!-- Warehouses Table -->
+  <div *ngIf="warehouses.length > 0" class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+    <h2 class="text-xl font-bold p-6 pb-4">Warehouses</h2>
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">City</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">State</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let warehouse of warehouses">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ warehouse.name }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ warehouse.code || '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ warehouse.city || '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ warehouse.state || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Locations Table -->
+  <div *ngIf="!loading || showCreateWarehouseForm || showCreateLocationForm" class="bg-white rounded-lg shadow-md overflow-hidden">
+    <h2 class="text-xl font-bold p-6 pb-4">Locations</h2>
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location Code</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Warehouse</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Area/Column/Rack/Bin</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Max Capacity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let location of locations">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ location.locationCode }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <span *ngFor="let wh of warehouses">
+              <span *ngIf="wh.id === location.warehouseId">{{ wh.name }}</span>
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ location.area }}/{{ location.column }}/{{ location.rack }}/{{ location.bin }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ location.maxCapacity || 100 }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button (click)="deleteLocation(location)"
+                    class="text-red-600 hover:text-red-900">Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="locations.length === 0">
+          <td colspan="5" class="px-6 py-4 text-center text-gray-500">No locations found. Click "Add Location" to create one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
