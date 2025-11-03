@@ -1,3 +1,8 @@
+/* TailwindCSS Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* FulfillFlow WMS - Global Styles */
 
 /* Global Touch Optimizations */

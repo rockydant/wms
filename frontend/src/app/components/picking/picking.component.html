@@ -25,7 +25,7 @@
                   class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             <option value="">Select Ready Shipment</option>
             <option *ngFor="let shipment of shipments" [value]="shipment.id">
-              {{ shipment.id?.substring(0, 8) }} - {{ shipment.customer?.name || 'No Customer' }} ({{ shipment.totalQuantity }} items)
+              {{ (shipment.id || '').substring(0, 8) }} - {{ shipment.customer?.name || 'No Customer' }} ({{ shipment.totalQuantity }} items)
             </option>
           </select>
           <p class="text-xs text-gray-500 mt-1">Only Ready shipments can be queued for picking</p>
