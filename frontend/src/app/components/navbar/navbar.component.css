@@ -1,2 +1,63 @@
 /* Navbar component styles */
 
+/* Touch-optimized targets */
+.touch-target {
+  min-height: 56px;
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tablet navigation - 2 rows */
+@media (min-width: 768px) and (max-width: 1023px) {
+  nav {
+    min-height: auto;
+  }
+
+  /* Navbar allows 2-row layout */
+  nav .container > div {
+    min-height: 120px; /* Accommodate 2 rows */
+  }
+
+  /* Navigation items in 2-row layout */
+  nav a.touch-target {
+    min-height: 56px;
+    padding: 0.75rem 1rem;
+    font-size: 16px;
+  }
+}
+
+/* Desktop navigation - single row */
+@media (min-width: 1024px) {
+  nav a.touch-target {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    font-size: 14px;
+  }
+}
+
+/* Mobile navigation - full touch targets */
+@media (max-width: 767px) {
+  nav a.touch-target {
+    min-height: 56px;
+    padding: 1rem;
+    font-size: 16px;
+  }
+}
+
+/* Smooth transitions */
+nav a {
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-out;
+}
+
+nav a:active {
+  transform: scale(0.98);
+}
+
+/* Active route styling */
+nav a[routerLinkActive] {
+  background-color: #374151;
+}

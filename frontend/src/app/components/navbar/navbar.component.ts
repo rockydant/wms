@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -24,6 +25,13 @@ export class NavbarComponent implements OnInit {
       this.user = user;
     });
     this.user = this.authService.getCurrentUser();
+    
+    // Close menu on route change
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.mobileMenuOpen = false;
+    });
   }
 
   logout(): void {

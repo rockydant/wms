@@ -33,8 +33,10 @@ input, select, textarea {
   touch-action: manipulation;
 }
 
-/* Responsive tables on mobile */
-@media (max-width: 768px) {
+/* ============================================
+   MOBILE STYLES (< 768px)
+   ============================================ */
+@media (max-width: 767px) {
   .p-datatable {
     font-size: 14px;
   }
@@ -47,17 +49,11 @@ input, select, textarea {
     padding-left: 1rem;
     padding-right: 1rem;
   }
-}
 
-/* Mobile-friendly grid layouts */
-@media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;
   }
-}
 
-/* Touch-friendly forms */
-@media (max-width: 768px) {
   .p-inputtext, .p-dropdown, .p-calendar input {
     padding: 12px;
     font-size: 16px;
@@ -68,17 +64,11 @@ input, select, textarea {
     font-weight: 600;
     margin-bottom: 8px;
   }
-}
 
-/* Larger touch targets on mobile */
-@media (max-width: 768px) {
   a {
     padding: 12px 16px;
   }
-}
 
-/* PrimeNG Mobile Improvements */
-@media (max-width: 768px) {
   .p-dialog {
     width: 90vw !important;
     margin: 0 auto;
@@ -86,5 +76,173 @@ input, select, textarea {
   
   .p-menu {
     width: 90vw !important;
+  }
+}
+
+/* ============================================
+   TABLET STYLES (768px - 1023px)
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Tablet-optimized tables */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 100%;
+  }
+
+  /* Tablet navigation - professional organized layout */
+  nav .navigation-links {
+    gap: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  nav .navigation-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  nav a {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* Navigation separators on tablet */
+  nav .separator {
+    flex-shrink: 0;
+    margin: 0 0.5rem;
+    width: 1px;
+    height: 1.5rem;
+    background-color: #4b5563;
+  }
+
+  /* Tablet forms - 2 columns where appropriate */
+  .form-grid-tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* Tablet buttons - slightly larger for touch */
+  button, .p-button, .btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0.75rem 1.25rem;
+    font-size: 16px;
+  }
+
+  /* Tablet containers - more breathing room */
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    max-width: 100%;
+  }
+
+  /* Tablet cards - better spacing */
+  .card {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Tablet dialogs - wider */
+  .p-dialog {
+    width: 85vw !important;
+    max-width: 600px;
+  }
+
+  /* Tablet inputs - comfortable size */
+  input, select, textarea {
+    font-size: 16px;
+    padding: 0.75rem;
+  }
+
+  /* Tablet tables - readable font size */
+  table {
+    font-size: 15px;
+  }
+
+  table th, table td {
+    padding: 0.875rem;
+  }
+
+  /* Tablet spacing - optimized for portrait/landscape */
+  .section-spacing {
+    padding: 1.5rem 0;
+  }
+}
+
+/* ============================================
+   DESKTOP STYLES (1024px+)
+   ============================================ */
+@media (min-width: 1024px) {
+  /* Desktop navigation - full menu */
+  nav .navigation-links {
+    gap: 0.5rem;
+  }
+
+  /* Desktop containers - max width for readability */
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  /* Desktop forms - can use 3 columns */
+  .form-grid-desktop {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* Desktop buttons - standard size */
+  button, .p-button, .btn {
+    min-height: 44px;
+    padding: 0.625rem 1.5rem;
+  }
+
+  /* Desktop tables - optimal spacing */
+  table {
+    font-size: 16px;
+  }
+
+  table th, table td {
+    padding: 1rem;
+  }
+
+  /* Desktop dialogs - centered and sized */
+  .p-dialog {
+    width: 70vw !important;
+    max-width: 800px;
+  }
+
+  /* Desktop cards - spacious */
+  .card {
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Desktop inputs - standard size */
+  input, select, textarea {
+    font-size: 16px;
+    padding: 0.625rem;
+  }
+}
+
+/* ============================================
+   WIDE DESKTOP STYLES (1280px+)
+   ============================================ */
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1400px;
+  }
+
+  /* Wider dialogs on large screens */
+  .p-dialog {
+    max-width: 1000px;
   }
 }
