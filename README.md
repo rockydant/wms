@@ -9,7 +9,7 @@ It digitizes your end-to-end operation: from inbound shipment receiving to order
 
 | Layer | Technology |
 |-------|-------------|
-| Frontend | AngularJS 1.8 + TailwindCSS (Touch-Optimized) |
+| Frontend | Angular 18 + PrimeNG 17 + TailwindCSS (Touch-Optimized) |
 | Backend | NestJS (TypeScript, REST & WebSocket) |
 | Database | PostgreSQL |
 | Queue | BullMQ (Redis) |
@@ -38,15 +38,38 @@ The FulfillFlow UI is fully optimized for touch devices with:
 
 ### 1️⃣ Start with Docker Compose
 
+#### Production Build (Nginx + Static Files)
 ```bash
-# Start all services
+# Start all services with production build
 docker-compose up -d
 
 # View logs
 docker-compose logs -f backend
+docker-compose logs -f frontend
 
 # Stop all services
 docker-compose down
+```
+
+**Note**: The frontend uses a production build with Nginx. It will be available at `http://localhost` (port 80).
+
+#### Development Build (Angular Dev Server)
+If you want to use the Angular development server with hot-reload:
+
+```bash
+# Use Dockerfile.dev for frontend development
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+Or manually:
+```bash
+# Start backend services only
+docker-compose up -d postgres redis backend
+
+# Run frontend locally with Angular CLI
+cd frontend
+npm install
+ng serve
 ```
 
 ### 2️⃣ Backend Development
@@ -80,9 +103,13 @@ npm install
 
 # Start development server
 npm start
+# or
+ng serve
 ```
 
 Frontend will be available at: `http://localhost:4200`
+
+**Note**: The frontend is built with Angular 18 and uses standalone components. All components are fully implemented and ready for production.
 
 ---
 
@@ -145,11 +172,14 @@ wms/
 │   │   ├── warehouse/   # Warehouse layout & heatmap
 │   │   └── reports/     # Reporting module
 │   └── package.json
-├── frontend/             # AngularJS frontend application
-│   ├── app/
-│   │   ├── controllers/ # AngularJS controllers
-│   │   ├── services/    # AngularJS services
-│   │   └── views/       # HTML views
+├── frontend/             # Angular 18 frontend application
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/ # Angular components (Login, Dashboard, Customers, etc.)
+│   │   │   ├── services/   # Angular services (Auth, API)
+│   │   │   ├── guards/     # Route guards (Auth)
+│   │   │   └── app.routes.ts # Routing configuration
+│   │   └── environments/   # Environment configurations
 │   └── package.json
 └── docker-compose.yml    # Docker orchestration
 ```
@@ -183,12 +213,14 @@ The following features have been fully implemented:
 - ✅ **Barcodes Module**: Inventory and picking barcode generation service
 
 #### Frontend
-- ✅ **AngularJS Application**: Complete frontend structure with routing
-- ✅ **Authentication UI**: Login/register functionality
+- ✅ **Angular 18 Application**: Modern Angular application with standalone components
+- ✅ **PrimeNG 17**: UI component library for professional interfaces
+- ✅ **Authentication UI**: Login functionality with route guards
 - ✅ **Dashboard**: Overview with inventory summary and recent shipments
-- ✅ **Module Views**: Views for all major modules (Customers, Shipments, Inventory, Receiving, Picking, QC, Packaging, Warehouse, Reports)
-- ✅ **Styling**: TailwindCSS + PrimeNG integration
-- ✅ **Services**: Auth and API service with JWT token management
+- ✅ **13 Complete Components**: All major modules migrated (Login, Dashboard, Navbar, Customers, Shipments, Inventory, Receiving, Picking, QC, Packaging, Warehouse, Reports, Users)
+- ✅ **Styling**: TailwindCSS + PrimeNG with touch-optimized responsive design
+- ✅ **Services**: AuthService and ApiService with JWT token management
+- ✅ **Lazy Loading**: Route-based code splitting for optimal performance
 
 #### Features
 - ✅ **Barcode System**: Automatic inventory and picking barcode generation
