@@ -8,6 +8,7 @@ import { InventoryService } from '../inventory/inventory.service';
 import { CustomersService } from '../customers/customers.service';
 import { HeatmapAutoUpdateService } from '../warehouse/services/heatmap-auto-update.service';
 import { InventoryStatus } from '../inventory/entities/inventory-item.entity';
+import { Role } from '../common/enums/role.enum';
 
 @Injectable()
 export class ReceivingService {
@@ -49,16 +50,27 @@ export class ReceivingService {
     return this.findOne(savedPO.id);
   }
 
-  async findAll(): Promise<PurchaseOrder[]> {
+  async findAll(customerId?: string): Promise<PurchaseOrder[]> {
+    const where: any = {};
+    if (customerId) {
+      where.customerId = customerId;
+    }
     return this.poRepository.find({
+      where,
       relations: ['items'],
       order: { createdAt: 'DESC' },
     });
   }
 
-  async findOne(id: string): Promise<PurchaseOrder> {
+  async findOne(id: string, user?: any): Promise<PurchaseOrder> {
+    const where: any = { id };
+    // If user is a customer, filter by their customerId
+    if ((user?.role === 'Customer' || user?.role === Role.CUSTOMER) && user?.customerId) {
+      where.customerId = user.customerId;
+    }
+    
     const po = await this.poRepository.findOne({
-      where: { id },
+      where,
       relations: ['items'],
     });
     if (!po) {

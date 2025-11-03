@@ -30,39 +30,39 @@
             Dashboard
           </a>
           <div class="w-px h-6 bg-gray-600"></div>
-          <a routerLink="/customers" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessCustomers()" routerLink="/customers" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Customers
           </a>
           <a routerLink="/inventory" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Inventory
           </a>
-          <a routerLink="/warehouse" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessWarehouse()" routerLink="/warehouse" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Warehouse
           </a>
         </div>
         
         <!-- Row 2: Operations & Admin -->
         <div class="flex items-center space-x-2 flex-wrap">
-          <a routerLink="/receiving" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessReceiving()" routerLink="/receiving" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Receiving
           </a>
-          <a routerLink="/picking" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessPicking()" routerLink="/picking" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Picking
           </a>
-          <a routerLink="/qc" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessQC()" routerLink="/qc" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             QC
           </a>
-          <a routerLink="/packaging" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessPackaging()" routerLink="/packaging" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Packaging
           </a>
           <a routerLink="/shipments" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Shipments
           </a>
           <div class="w-px h-6 bg-gray-600"></div>
-          <a routerLink="/reports" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessReports()" routerLink="/reports" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Reports
           </a>
-          <a routerLink="/users" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessUsers()" routerLink="/users" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Users
           </a>
         </div>
@@ -78,36 +78,36 @@
             Dashboard
           </a>
           <div class="mx-1 w-px h-6 bg-gray-600"></div>
-          <a routerLink="/customers" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessCustomers()" routerLink="/customers" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Customers
           </a>
           <a routerLink="/inventory" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Inventory
           </a>
-          <a routerLink="/warehouse" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessWarehouse()" routerLink="/warehouse" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Warehouse
           </a>
-          <div class="mx-1 w-px h-6 bg-gray-600"></div>
-          <a routerLink="/receiving" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <div *ngIf="canAccessReceiving() || canAccessPicking() || canAccessQC() || canAccessPackaging()" class="mx-1 w-px h-6 bg-gray-600"></div>
+          <a *ngIf="canAccessReceiving()" routerLink="/receiving" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Receiving
           </a>
-          <a routerLink="/picking" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessPicking()" routerLink="/picking" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Picking
           </a>
-          <a routerLink="/qc" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessQC()" routerLink="/qc" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             QC
           </a>
-          <a routerLink="/packaging" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessPackaging()" routerLink="/packaging" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Packaging
           </a>
           <a routerLink="/shipments" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Shipments
           </a>
-          <div class="mx-1 w-px h-6 bg-gray-600"></div>
-          <a routerLink="/reports" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <div *ngIf="canAccessReports() || canAccessUsers()" class="mx-1 w-px h-6 bg-gray-600"></div>
+          <a *ngIf="canAccessReports()" routerLink="/reports" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Reports
           </a>
-          <a routerLink="/users" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessUsers()" routerLink="/users" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Users
           </a>
         </div>
@@ -133,37 +133,37 @@
       <a routerLink="/" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" [routerLinkActiveOptions]="{exact: true}" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Dashboard
       </a>
-      <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</div>
-      <a routerLink="/customers" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <div *ngIf="canAccessCustomers() || canAccessWarehouse()" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</div>
+      <a *ngIf="canAccessCustomers()" routerLink="/customers" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Customers
       </a>
       <a routerLink="/inventory" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Inventory
       </a>
-      <a routerLink="/warehouse" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessWarehouse()" routerLink="/warehouse" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Warehouse
       </a>
-      <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Operations</div>
-      <a routerLink="/receiving" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <div *ngIf="canAccessReceiving() || canAccessPicking() || canAccessQC() || canAccessPackaging()" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Operations</div>
+      <a *ngIf="canAccessReceiving()" routerLink="/receiving" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Receiving
       </a>
-      <a routerLink="/picking" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessPicking()" routerLink="/picking" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Picking
       </a>
-      <a routerLink="/qc" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessQC()" routerLink="/qc" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         QC
       </a>
-      <a routerLink="/packaging" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessPackaging()" routerLink="/packaging" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Packaging
       </a>
       <a routerLink="/shipments" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Shipments
       </a>
-      <div class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</div>
-      <a routerLink="/reports" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <div *ngIf="canAccessReports() || canAccessUsers()" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</div>
+      <a *ngIf="canAccessReports()" routerLink="/reports" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Reports
       </a>
-      <a routerLink="/users" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessUsers()" routerLink="/users" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Users
       </a>
     </div>

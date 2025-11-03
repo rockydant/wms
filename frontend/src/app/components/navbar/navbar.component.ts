@@ -50,5 +50,51 @@ export class NavbarComponent implements OnInit {
   isActiveRoute(route: string): boolean {
     return this.router.url === route || (route === '/' && this.router.url === '');
   }
+
+  // Role-based navigation helpers
+  hasRole(roles: string[]): boolean {
+    if (!this.user) return false;
+    return roles.includes(this.user.role);
+  }
+
+  isSuperAdmin(): boolean {
+    return this.hasRole(['Super Admin']);
+  }
+
+  isCustomer(): boolean {
+    return this.hasRole(['Customer']);
+  }
+
+  canAccessCustomers(): boolean {
+    return this.hasRole(['Super Admin']);
+  }
+
+  canAccessUsers(): boolean {
+    return this.hasRole(['Super Admin']);
+  }
+
+  canAccessReceiving(): boolean {
+    return this.hasRole(['Super Admin', 'Receiving', 'Inventory Leader', 'Customer']);
+  }
+
+  canAccessPicking(): boolean {
+    return this.hasRole(['Super Admin', 'Picking', 'Inventory Leader']);
+  }
+
+  canAccessQC(): boolean {
+    return this.hasRole(['Super Admin', 'QC', 'Delivery Leader']);
+  }
+
+  canAccessPackaging(): boolean {
+    return this.hasRole(['Super Admin', 'Packaging', 'Delivery Leader']);
+  }
+
+  canAccessWarehouse(): boolean {
+    return this.hasRole(['Super Admin', 'Inventory Leader']);
+  }
+
+  canAccessReports(): boolean {
+    return this.hasRole(['Super Admin', 'Inventory Leader', 'Delivery Leader', 'Customer']);
+  }
 }
 

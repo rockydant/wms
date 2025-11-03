@@ -5,6 +5,8 @@ import {
   Query,
   Param,
   UseGuards,
+  Request,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ReportsService } from './reports.service';
@@ -89,9 +91,27 @@ export class ReportsController {
   @Get('daily-confirmation/:customerId')
   @Roles(Role.SUPER_ADMIN, Role.CUSTOMER)
   @ApiOperation({ summary: 'Get daily confirmation report for customer' })
-  getDailyConfirmation(@Param('customerId') customerId: string, @Query('date') date?: string) {
+  getDailyConfirmation(@Param('customerId') customerId: string, @Query('date') date?: string, @Request() req?: any) {
+    // For customers, ensure they can only access their own reports
+    if (req?.user?.role === Role.CUSTOMER && req?.user?.customerId !== customerId) {
+      throw new ForbiddenException('Access denied: You can only view your own reports');
+    }
     return this.dailyConfirmationService.generateDailyConfirmationReport(
       customerId,
+      date ? new Date(date) : undefined,
+    );
+  }
+
+  // Customer-specific endpoint to get their own daily confirmation
+  @Get('my-daily-confirmation')
+  @Roles(Role.CUSTOMER)
+  @ApiOperation({ summary: 'Get daily confirmation report for current customer' })
+  getMyDailyConfirmation(@Query('date') date?: string, @Request() req?: any) {
+    if (!req?.user?.customerId) {
+      throw new ForbiddenException('Customer ID not found for user');
+    }
+    return this.dailyConfirmationService.generateDailyConfirmationReport(
+      req.user.customerId,
       date ? new Date(date) : undefined,
     );
   }

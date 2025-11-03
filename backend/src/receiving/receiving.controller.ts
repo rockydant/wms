@@ -24,24 +24,31 @@ export class ReceivingController {
   constructor(private readonly receivingService: ReceivingService) {}
 
   @Post('purchase-orders')
-  @Roles(Role.RECEIVING, Role.INVENTORY_LEADER, Role.SUPER_ADMIN)
+  @Roles(Role.RECEIVING, Role.INVENTORY_LEADER, Role.SUPER_ADMIN, Role.CUSTOMER)
   @ApiOperation({ summary: 'Create a new purchase order' })
-  create(@Body() createPoDto: CreatePurchaseOrderDto) {
+  create(@Body() createPoDto: CreatePurchaseOrderDto, @Request() req) {
+    // For customers, automatically set customerId from user
+    if (req.user.role === Role.CUSTOMER && req.user.customerId) {
+      createPoDto.customerId = req.user.customerId;
+    }
     return this.receivingService.create(createPoDto);
   }
 
   @Get('purchase-orders')
-  @Roles(Role.RECEIVING, Role.INVENTORY_LEADER, Role.SUPER_ADMIN)
+  @Roles(Role.RECEIVING, Role.INVENTORY_LEADER, Role.SUPER_ADMIN, Role.CUSTOMER)
   @ApiOperation({ summary: 'Get all purchase orders' })
-  findAll() {
-    return this.receivingService.findAll();
+  findAll(@Request() req) {
+    // For customers, only return their own POs
+    const customerId = req.user.role === Role.CUSTOMER ? req.user.customerId : undefined;
+    return this.receivingService.findAll(customerId);
   }
 
   @Get('purchase-orders/:id')
-  @Roles(Role.RECEIVING, Role.INVENTORY_LEADER, Role.SUPER_ADMIN)
+  @Roles(Role.RECEIVING, Role.INVENTORY_LEADER, Role.SUPER_ADMIN, Role.CUSTOMER)
   @ApiOperation({ summary: 'Get purchase order by ID' })
-  findOne(@Param('id') id: string) {
-    return this.receivingService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    // For customers, verify they own this PO
+    return this.receivingService.findOne(id, req.user);
   }
 
   @Patch('purchase-orders/:id/receive-item')

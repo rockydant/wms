@@ -115,42 +115,52 @@ Frontend will be available at: `http://localhost:4200`
 
 ## 🔐 Default Credentials
 
-**Initial Setup Required:**
+### Admin User
 
-There are no default users created automatically. You need to create the first admin user through the registration API:
-
-```bash
-# Register first admin user via API
-curl -X POST http://localhost:3000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@fulfillflow.com",
-    "password": "admin123",
-    "firstName": "Admin",
-    "lastName": "User",
-    "role": "Super Admin"
-  }'
-```
-
-**Recommended Default Credentials:**
+**Default Admin Credentials:**
 - **Email:** `admin@fulfillflow.com`
 - **Password:** `admin123`
 - **Role:** `Super Admin`
 
-⚠️ **IMPORTANT:** Change the default password immediately after first login!
+### Test Users by Role
 
-Alternatively, you can use the seed script to create the default admin user:
+The seed script creates test users for all roles. All test users use password: **`test123`**
+
+| Role | Email | Password | Name |
+|------|-------|----------|------|
+| Super Admin | `admin@fulfillflow.com` | `admin123` | Admin User |
+| Super Admin | `superadmin@fulfillflow.com` | `test123` | Super Admin |
+| Inventory Leader | `inventory@fulfillflow.com` | `test123` | Inventory Leader |
+| Receiving | `receiving@fulfillflow.com` | `test123` | Receiving Staff |
+| Picking | `picking@fulfillflow.com` | `test123` | Picking Staff |
+| Delivery Leader | `delivery@fulfillflow.com` | `test123` | Delivery Leader |
+| QC | `qc@fulfillflow.com` | `test123` | Quality Control |
+| Packaging | `packaging@fulfillflow.com` | `test123` | Packaging Staff |
+| Customer | `customer@fulfillflow.com` | `test123` | Test Customer |
+
+### Creating Test Users
+
+Run the seed script to create all test users:
 
 ```bash
-# Inside backend container or with npm
+# Inside backend container or locally
 cd backend
 npm run seed
 ```
 
-This will create a default admin user with:
-- **Email:** `admin@fulfillflow.com`
-- **Password:** `admin123`
-- **Role:** `Super Admin`
+Or using Docker:
+
+```bash
+docker-compose exec backend npm run seed
+```
+
+The seed script will:
+- Create the default admin user if it doesn't exist
+- Create test users for all 8 roles
+- Skip users that already exist (safe to run multiple times)
+- Display a summary of created/skipped users
+
+⚠️ **IMPORTANT:** Change default passwords after first login for security!
 
 ---
 
