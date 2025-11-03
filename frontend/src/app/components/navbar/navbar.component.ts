@@ -96,5 +96,13 @@ export class NavbarComponent implements OnInit {
   canAccessReports(): boolean {
     return this.hasRole(['Super Admin', 'Inventory Leader', 'Delivery Leader', 'Customer']);
   }
+
+  canAccessInventory(): boolean {
+    return this.hasRole(['Super Admin', 'Inventory Leader', 'Receiving', 'Picking', 'Customer']);
+  }
+
+  canAccessShipments(): boolean {
+    return this.hasRole(['Super Admin', 'Inventory Leader', 'Delivery Leader', 'Packaging', 'Customer']);
+  }
 }
 

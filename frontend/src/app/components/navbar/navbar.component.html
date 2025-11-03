@@ -29,11 +29,11 @@
              class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Dashboard
           </a>
-          <div class="w-px h-6 bg-gray-600"></div>
+          <div *ngIf="canAccessCustomers() || canAccessInventory() || canAccessWarehouse()" class="w-px h-6 bg-gray-600"></div>
           <a *ngIf="canAccessCustomers()" routerLink="/customers" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Customers
           </a>
-          <a routerLink="/inventory" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessInventory()" routerLink="/inventory" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Inventory
           </a>
           <a *ngIf="canAccessWarehouse()" routerLink="/warehouse" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
@@ -55,10 +55,10 @@
           <a *ngIf="canAccessPackaging()" routerLink="/packaging" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Packaging
           </a>
-          <a routerLink="/shipments" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessShipments()" routerLink="/shipments" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Shipments
           </a>
-          <div class="w-px h-6 bg-gray-600"></div>
+          <div *ngIf="canAccessReports() || canAccessUsers()" class="w-px h-6 bg-gray-600"></div>
           <a *ngIf="canAccessReports()" routerLink="/reports" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-lg text-base font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Reports
           </a>
@@ -77,11 +77,11 @@
              class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Dashboard
           </a>
-          <div class="mx-1 w-px h-6 bg-gray-600"></div>
+          <div *ngIf="canAccessCustomers() || canAccessInventory() || canAccessWarehouse()" class="mx-1 w-px h-6 bg-gray-600"></div>
           <a *ngIf="canAccessCustomers()" routerLink="/customers" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Customers
           </a>
-          <a routerLink="/inventory" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessInventory()" routerLink="/inventory" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Inventory
           </a>
           <a *ngIf="canAccessWarehouse()" routerLink="/warehouse" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
@@ -100,7 +100,7 @@
           <a *ngIf="canAccessPackaging()" routerLink="/packaging" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Packaging
           </a>
-          <a routerLink="/shipments" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
+          <a *ngIf="canAccessShipments()" routerLink="/shipments" routerLinkActive="bg-gray-700" class="px-4 py-3 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors touch-target whitespace-nowrap">
             Shipments
           </a>
           <div *ngIf="canAccessReports() || canAccessUsers()" class="mx-1 w-px h-6 bg-gray-600"></div>
@@ -137,7 +137,7 @@
       <a *ngIf="canAccessCustomers()" routerLink="/customers" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Customers
       </a>
-      <a routerLink="/inventory" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessInventory()" routerLink="/inventory" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Inventory
       </a>
       <a *ngIf="canAccessWarehouse()" routerLink="/warehouse" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
@@ -156,7 +156,7 @@
       <a *ngIf="canAccessPackaging()" routerLink="/packaging" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Packaging
       </a>
-      <a routerLink="/shipments" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
+      <a *ngIf="canAccessShipments()" routerLink="/shipments" (click)="closeMobileMenu()" routerLinkActive="bg-gray-700" class="block px-4 py-4 rounded-lg text-base font-medium hover:bg-gray-700 touch-target">
         Shipments
       </a>
       <div *ngIf="canAccessReports() || canAccessUsers()" class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</div>
